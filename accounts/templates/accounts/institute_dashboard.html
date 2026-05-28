@@ -1,0 +1,286 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}Dashboard | {{ institute.institute_name }} | IntelliLearn Partner Portal{% endblock %}
+
+{% block content %}
+<style>
+    /* Custom styles for the professional look */
+    .dashboard-container {
+        min-height: 90vh;
+        background-color: #f0f4f8;
+        /* Light blue-grey background */
+        padding-top: 50px;
+        padding-bottom: 50px;
+    }
+
+    .welcome-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        /* Soft shadow */
+        border: none;
+        overflow: hidden;
+    }
+
+    .welcome-header {
+        background: linear-gradient(135deg, #1c49ff 0%, #1443ff 100%);
+        color: white;
+        padding: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .institute-info {
+        text-align: left;
+    }
+
+    .welcome-title {
+        font-weight: 800;
+        margin-bottom: 5px;
+    }
+
+    .admin-info {
+        opacity: 0.8;
+        font-size: 0.95rem;
+    }
+
+    .logout-btn {
+        background-color: rgba(255, 255, 255, 0.2);
+        color: white;
+        border: none;
+        border-radius: 50px;
+        padding: 10px 24px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .logout-btn:hover {
+        background-color: rgba(255, 255, 255, 0.3);
+        transform: translateY(-2px);
+        color: white;
+    }
+
+    .dashboard-body {
+        padding: 40px;
+    }
+
+    /* Stats Cards Styles */
+    .stat-card {
+        background: white;
+        border-radius: 15px;
+        border: 1px solid #e1e8ed;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
+    }
+
+    .stat-icon {
+        font-size: 2rem;
+        color: #1443ff;
+        /* Matching your theme color */
+    }
+
+    /* Background Image Area */
+    .dashboard-image-section {
+        border-radius: 15px;
+        min-height: 250px;
+        background-size: cover;
+        background-position: center;
+        margin-top: 30px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .dashboard-image-overlay {
+        position: absolute;
+        bottom: 20px;
+        left: 20px;
+        background: rgba(255, 255, 255, 0.9);
+        padding: 15px 25px;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<div class="dashboard-container">
+    <div class="container">
+
+        <!-- Welcome Card -->
+        <div class="card welcome-card mb-4">
+            <div class="welcome-header">
+                <div class="institute-info">
+                    <span class="text-uppercase fw-bold text-warning small">Command Center</span>
+                    <h1 class="welcome-title display-6">Welcome, {{ institute.institute_name }}</h1>
+                    <div class="admin-info">
+                        <i class="fas fa-user-circle me-1"></i> Admin: <strong>{{ request.user.username }}</strong>
+                        &nbsp;|&nbsp;
+                        <i class="fas fa-envelope me-1"></i> {{ institute.email }}
+                    </div>
+                </div>
+                <a href="{% url 'institute_logout_view' %}" class="logout-btn">
+                    <i class="fas fa-sign-out-alt me-2"></i>Logout Portal
+                </a>
+            </div>
+
+            <div class="dashboard-body">
+                <p class="lead text-muted mb-4">A high-level overview of your institution's digital ecosystem on
+                    IntelliLearn.</p>
+
+                <div class="row g-4 mb-4">
+
+                    <!-- Faculty Members -->
+                    <div class="col-md-3">
+
+                        <a href="{% url 'instructor_list' %}" class="text-decoration-none">
+
+                            <div class="card stat-card h-100 p-4 shadow-sm">
+
+                                <div class="d-flex align-items-center mb-3">
+
+                                    <i class="fas fa-chalkboard-teacher stat-icon me-3 text-primary"></i>
+
+                                    <h6 class="text-muted text-uppercase mb-0 fw-bold small">
+                                        Faculty Members
+                                    </h6>
+
+                                </div>
+
+                                <h2 class="fw-bold mb-0">
+                                    {{ total_instructors }}
+                                </h2>
+
+                                <p class="text-muted small mt-2 mb-0">
+                                    View all instructors
+                                </p>
+
+                            </div>
+
+                        </a>
+
+                    </div>
+
+                    <!-- Students -->
+                    <div class="col-md-3">
+
+                        <a href="{% url 'institute_students' %}" class="text-decoration-none">
+
+                            <div class="card stat-card h-100 p-4 shadow-sm">
+
+                                <div class="d-flex align-items-center mb-3">
+
+                                    <i class="fas fa-user-graduate stat-icon me-3 text-success"></i>
+
+                                    <h6 class="text-muted text-uppercase mb-0 fw-bold small">
+                                        Students Registered
+                                    </h6>
+
+                                </div>
+
+                                <h2 class="fw-bold mb-0">
+                                    {{ total_students }}
+                                </h2>
+
+                                <p class="text-muted small mt-2 mb-0">
+                                    Total enrolled students
+                                </p>
+
+                            </div>
+
+                        </a>
+
+                    </div>
+
+                    <!-- Courses -->
+                    <div class="col-md-3">
+
+                        <a href="{% url 'course_list' %}" class="text-decoration-none">
+
+                            <div class="card stat-card h-100 p-4 shadow-sm">
+
+                                <div class="d-flex align-items-center mb-3">
+
+                                    <i class="fas fa-book-open stat-icon me-3 text-warning"></i>
+
+                                    <h6 class="text-muted text-uppercase mb-0 fw-bold small">
+                                        Active Courses
+                                    </h6>
+
+                                </div>
+
+                                <h2 class="fw-bold mb-0">
+                                    {{ total_courses }}
+                                </h2>
+
+                                <p class="text-muted small mt-2 mb-0">
+                                    Manage all courses
+                                </p>
+
+                            </div>
+
+                        </a>
+
+                    </div>
+
+                    <!-- Enrollments -->
+                    <div class="col-md-3">
+
+                        <a href="{% url 'institute_students' %}" class="text-decoration-none">
+
+                            <div class="card stat-card h-100 p-4 shadow-sm">
+
+                                <div class="d-flex align-items-center mb-3">
+
+                                    <i class="fas fa-file-signature stat-icon me-3 text-danger"></i>
+
+                                    <h6 class="text-muted text-uppercase mb-0 fw-bold small">
+                                        Total Enrollments
+                                    </h6>
+
+                                </div>
+
+                                <h2 class="fw-bold mb-0">
+                                    {{ total_enrollments }}
+                                </h2>
+
+                                <p class="text-muted small mt-2 mb-0">
+                                    View enrollment activity
+                                </p>
+
+                            </div>
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+                <!-- Subtle Image Background Section with Quick Actions -->
+                <div class="dashboard-image-section shadow-inner"
+                    style="background-image: url('https://images.unsplash.com/photo-1510070112810-d4e9a46d9e91?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80');">
+                    <div class="dashboard-image-overlay">
+                        <h5 class="fw-bold mb-1">Empower Your Education</h5>
+                        <p class="text-muted small mb-3">Efficiently manage, monitor, and master your institution.</p>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-sm btn-primary px-3">
+                                <a href="{% url 'instructor_create' %}" class="text-white text-decoration-none">
+                                    Add Faculty
+                                </a>
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary px-3">Create Course</button>
+                            <button class="btn btn-sm btn-outline-secondary px-3">View Analytics</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

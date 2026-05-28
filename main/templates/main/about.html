@@ -1,0 +1,135 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}About Us | The Vision Behind IntelliLearn{% endblock %}
+
+{% block content %}
+<style>
+    .about-header {
+        background: linear-gradient(rgba(13, 110, 253, 0.05), rgba(13, 110, 253, 0.05));
+        padding: 80px 0;
+        border-radius: 24px;
+        margin-bottom: 60px;
+    }
+    .mission-card {
+        border: none;
+        border-left: 5px solid #0d6efd;
+        background: #f8f9fa;
+        padding: 30px;
+        border-radius: 0 15px 15px 0;
+    }
+    .tech-badge {
+        background: #fff;
+        border: 1px solid #dee2e6;
+        padding: 10px 20px;
+        border-radius: 50px;
+        display: inline-block;
+        margin: 5px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    .tech-badge:hover {
+        border-color: #0d6efd;
+        color: #0d6efd;
+        transform: translateY(-2px);
+    }
+    .team-member img {
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+        border-radius: 50%;
+        margin-bottom: 15px;
+        border: 4px solid #fff;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+</style>
+
+<!-- 1. Header & Vision -->
+<section class="about-header text-center">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <h1 class="display-4 fw-bold mb-3">Redefining the <span class="text-primary">Future of Learning</span></h1>
+                <p class="lead text-muted">IntelliLearn is more than just an LMS. It's a comprehensive ecosystem designed to bridge the gap between traditional teaching and modern technology.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 2. Our Mission & Story -->
+<div class="container mb-5">
+    <div class="row align-items-center g-5">
+        <div class="col-lg-6">
+            <img src="https://img.freepik.com/free-vector/modern-education-concept-illustration_114360-8457.jpg" alt="About IntelliLearn" class="img-fluid rounded-4 shadow">
+        </div>
+        <div class="col-lg-6">
+            <h2 class="fw-bold mb-4">Our Mission</h2>
+            <div class="mission-card mb-4">
+                <p class="mb-0">"To provide an accessible, secure, and intelligent platform that empowers educators to deliver high-quality content and enables students to achieve their full potential through personalized data-driven insights."</p>
+            </div>
+            <p class="text-muted">Founded in 2026, IntelliLearn addresses the critical need for integrity in online examinations. By integrating AI proctoring and adaptive testing, we ensure that every certificate earned on our platform is a true reflection of the student's merit.</p>
+        </div>
+    </div>
+</div>
+
+<!-- 3. The Technology Stack (Great for Resumes!) -->
+<section class="bg-light py-5 rounded-4 mb-5">
+    <div class="container text-center">
+        <h3 class="fw-bold mb-4">Built with Industry-Standard Tech</h3>
+        <p class="text-muted mb-4">Our platform leverages a robust stack to ensure speed, security, and scalability.</p>
+        <div class="d-flex flex-wrap justify-content-center">
+            <span class="tech-badge"><i class="fab fa-python text-primary me-2"></i>Django Backend</span>
+            <span class="tech-badge"><i class="fas fa-database text-info me-2"></i>PostgreSQL</span>
+            <span class="tech-badge"><i class="fab fa-js text-warning me-2"></i>Chart.js Analytics</span>
+            <span class="tech-badge"><i class="fas fa-camera-retro text-danger me-2"></i>OpenCV Proctoring</span>
+            <span class="tech-badge"><i class="fab fa-bootstrap text-purple me-2"></i>Bootstrap 5</span>
+            <span class="tech-badge"><i class="fas fa-file-pdf text-danger me-2"></i>ReportLab PDF</span>
+        </div>
+    </div>
+</section>
+
+<!-- 4. Core Values -->
+<div class="container mb-5">
+    <div class="row g-4 text-center">
+        <div class="col-md-4">
+            <div class="p-4">
+                <i class="fas fa-shield-alt fa-3x text-primary mb-3"></i>
+                <h5 class="fw-bold">Academic Integrity</h5>
+                <p class="text-muted small">Advanced anti-cheating mechanisms to maintain the value of online certifications.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-4">
+                <i class="fas fa-bolt fa-3x text-primary mb-3"></i>
+                <h5 class="fw-bold">Real-time Insights</h5>
+                <p class="text-muted small">Instant feedback for students and detailed performance heatmaps for instructors.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-4">
+                <i class="fas fa-universal-access fa-3x text-primary mb-3"></i>
+                <h5 class="fw-bold">Universal Access</h5>
+                <p class="text-muted small">A responsive design that works seamlessly across desktops, tablets, and mobile devices.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 5. Team/Founder Section (Optional) -->
+<div class="container text-center py-5">
+    <h3 class="fw-bold mb-5">Meet the Visionary</h3>
+    <div class="row justify-content-center">
+        <div class="col-md-4 team-member">
+            <!-- Replace with your own image and details -->
+            <img src="{% static 'images/Vivek.jpg' %}" alt="Founder">
+            <h5 class="mb-1 fw-bold">Mr. Vivek Singh</h5>
+            <p class="text-primary small fw-bold">Lead Developer & Architect</p>
+            <p class="text-muted px-3">Passionate about educational technology and building scalable full-stack applications.</p>
+            <div class="social-links">
+                <a href="#" class="text-muted me-2"><i class="fab fa-linkedin"></i></a>
+                <a href="#" class="text-muted"><i class="fab fa-github"></i></a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

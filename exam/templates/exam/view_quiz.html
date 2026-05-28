@@ -1,0 +1,81 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+
+<div class="container py-5">
+
+    <div class="d-flex justify-content-between mb-4">
+
+        <h2>{{ quiz.title }}</h2>
+
+        <div>
+
+            <a href="{% url 'edit_quiz' quiz.pk %}"
+               class="btn btn-warning">
+
+                Edit Quiz
+
+            </a>
+
+            <a href="{% url 'delete_quiz' quiz.pk %}"
+               class="btn btn-danger">
+
+                Delete Quiz
+
+            </a>
+
+        </div>
+
+    </div>
+
+    {% for question in questions %}
+
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-body">
+
+            <h5>
+                Q{{ forloop.counter }}.
+                {{ question.question }}
+            </h5>
+
+            <ul class="mt-3">
+
+                <li>{{ question.option1 }}</li>
+
+                <li>{{ question.option2 }}</li>
+
+                <li>{{ question.option3 }}</li>
+
+                <li>{{ question.option4 }}</li>
+
+            </ul>
+
+            <p class="text-success fw-bold">
+                Correct Answer:
+                {{ question.correct_answer }}
+            </p>
+
+            <a href="{% url 'edit_question' question.pk %}"
+               class="btn btn-warning btn-sm">
+
+                Edit
+
+            </a>
+
+            <a href="{% url 'delete_question' question.pk %}"
+               class="btn btn-danger btn-sm">
+
+                Delete
+
+            </a>
+
+        </div>
+
+    </div>
+
+    {% endfor %}
+
+</div>
+
+{% endblock %}

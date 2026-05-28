@@ -1,0 +1,170 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}Portal Login | IntelliLearn Partner Portal{% endblock %}
+
+{% block content %}
+<style>
+    /* Full-height container */
+    .login-container {
+        min-height: 90vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #f8f9fa;
+        padding: 20px;
+    }
+
+    .login-card {
+        background: #fff;
+        border-radius: 25px;
+        overflow: hidden;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+        border: none;
+        width: 100%;
+        max-width: 1000px;
+    }
+
+    /* Left Side: Corporate Branding Panel */
+    .login-image-side {
+        background: linear-gradient(135deg, rgba(28, 73, 255, 0.9), rgba(20, 169, 255, 0.85)), 
+                    url('https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80');
+        background-size: cover;
+        background-position: center;
+        color: white;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 50px;
+        text-align: center;
+    }
+
+    .login-form-side {
+        padding: 60px;
+    }
+
+    /* Inputs & Buttons */
+    .form-control {
+        background-color: #f1f3f5;
+        border: 2px solid transparent;
+        padding: 14px;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        background-color: #fff;
+        border-color: #1a2a6c;
+        box-shadow: 0 0 0 4px rgba(26, 42, 108, 0.1);
+    }
+
+    .btn-institute {
+        background: rgb(18, 93, 255);
+        color: white;
+        padding: 14px;
+        border-radius: 12px;
+        font-weight: 600;
+        border: none;
+        transition: 0.3s;
+    }
+
+    .btn-institute:hover {
+        background: #0033ff;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(26, 42, 108, 0.3);
+        color: white;
+    }
+
+    .admin-badge {
+        background: rgba(255, 255, 255, 0.2);
+        padding: 6px 16px;
+        border-radius: 50px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1.2px;
+        margin-bottom: 25px;
+        display: inline-block;
+    }
+</style>
+
+<div class="login-container">
+    <div class="card login-card">
+        <div class="row g-0">
+            
+            <!-- Left Side: Branding & Trust -->
+            <div class="col-lg-6 d-none d-lg-flex login-image-side">
+                <div>
+                    <span class="admin-badge">Secure Admin Access</span>
+                    <h2 class="fw-bold mb-3">Partner Portal</h2>
+                    <p class="opacity-75 mb-5 small">Access your institutional dashboard to manage faculty, monitor exams, and review advanced analytics.</p>
+                    
+                    <div class="text-start d-inline-block mx-auto">
+                        <div class="mb-3 small"><i class="fas fa-shield-alt text-warning me-2"></i> Encrypted Session Management</div>
+                        <div class="mb-3 small"><i class="fas fa-user-check text-warning me-2"></i> Multi-Factor Ready</div>
+                        <div class="small"><i class="fas fa-history text-warning me-2"></i> Access Logs & Audit Trails</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side: Login Form -->
+            <div class="col-lg-6 login-form-side">
+                <div class="mb-5">
+                    <h2 class="fw-bold mb-2">Institute & Instructor Sign In</h2>
+                    <p class="text-muted">Enter your credentials below to access your custom workspace dashboard.</p>
+                </div>
+
+                <!-- Django Messages Error Display System -->
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert" style="border-radius: 12px;">
+                            <i class="fas fa-exclamation-circle me-2"></i>{{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <!-- Unified Submission Form targeting views.py -->
+                <form method="POST" action="">
+                    {% csrf_token %}
+                    
+                    <!-- Username Input Field -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-muted small">USERNAME</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-0"><i class="fas fa-user-tie text-muted"></i></span>
+                            <input type="text" name="username" class="form-control" placeholder="Enter system username" required autocomplete="username">
+                        </div>
+                    </div>
+
+                    <!-- Password Input Field -->
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between">
+                            <label class="form-label fw-bold text-muted small">PASSWORD</label>
+                            <a href="#" class="text-decoration-none small text-primary fw-bold">Forgot?</a>
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-0"><i class="fas fa-lock text-muted"></i></span>
+                            <input type="password" name="password" class="form-control" placeholder="••••••••" required autocomplete="current-password">
+                        </div>
+                    </div>
+
+                    <div class="mb-4 form-check">
+                        <input type="checkbox" class="form-check-input" id="remember_inst">
+                        <label class="form-check-label text-muted small" for="remember_inst">Trust this device for 30 days</label>
+                    </div>
+
+                    <button type="submit" class="btn btn-institute w-100 shadow-sm mb-4">
+                        Login to Dashboard <i class="fas fa-arrow-right ms-2"></i>
+                    </button>
+
+                    <p class="text-center text-muted small">
+                        New Institute? <a href="#" class="fw-bold text-primary text-decoration-none">Create a Partner Account</a>
+                    </p>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

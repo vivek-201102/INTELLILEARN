@@ -1,0 +1,161 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}Join IntelliLearn | Create Your Account{% endblock %}
+
+{% block content %}
+<style>
+    .register-container {
+        min-height: 90vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .register-card {
+        background: #fff;
+        border-radius: 25px;
+        overflow: hidden;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+        border: none;
+        width: 100%;
+        max-width: 1100px;
+    }
+    .register-form-side {
+        padding: 40px 60px;
+    }
+    .register-image-side {
+        background: linear-gradient(135deg, rgba(13, 110, 253, 0.9), rgba(102, 16, 242, 0.9)), 
+                    url('https://img.freepik.com/free-photo/group-diverse-grads-throwing-caps-up-air_53876-56031.jpg');
+        background-size: cover;
+        background-position: center;
+        color: white;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 50px;
+    }
+    .form-label {
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #6c757d;
+        margin-bottom: 8px;
+    }
+    .form-control {
+        background-color: #f8f9fa;
+        border: 1px solid #e9ecef;
+        padding: 10px 15px;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+    }
+    .form-control:focus {
+        background-color: #fff;
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.1);
+    }
+    .btn-register {
+        padding: 14px;
+        border-radius: 12px;
+        font-weight: 700;
+        background: linear-gradient(to right, #0d6efd, #6610f2);
+        border: none;
+        transition: transform 0.2s;
+    }
+    .btn-register:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(13, 110, 253, 0.3);
+    }
+    .step-indicator {
+        font-size: 0.75rem;
+        color: #0d6efd;
+        font-weight: 700;
+        margin-bottom: 10px;
+        display: block;
+    }
+</style>
+
+<div class="register-container mt-3 mb-5">
+    <div class="card register-card">
+        <div class="row g-0">
+            <div class="col-lg-5 d-none d-lg-flex register-image-side">
+                <div class="mb-5">
+                    <h1 class="fw-bold display-5">Start Your Journey.</h1>
+                    <p class="lead opacity-75">Unlock a world of intelligent learning and certified success.</p>
+                </div>
+                
+                <div class="features-list">
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="bg-white text-primary rounded-circle p-2 me-3">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <span>Access to 500+ Premium Courses</span>
+                    </div>
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="bg-white text-primary rounded-circle p-2 me-3">
+                            <i class="fas fa-chart-pie"></i>
+                        </div>
+                        <span>Personalized Learning Analytics</span>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <div class="bg-white text-primary rounded-circle p-2 me-3">
+                            <i class="fas fa-shield-check"></i>
+                        </div>
+                        <span>AI-Proctored Certifications</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-7 register-form-side">
+                <span class="step-indicator">GET STARTED FOR FREE</span>
+                <h2 class="fw-bold mb-4">Create Account</h2>
+
+                <form method="POST">
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label fw-bold">Username</label>
+                            <input type="text" name="username" class="form-control" placeholder="johndoe123" required>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Email Address</label>
+                            <input type="email" name="email" class="form-control" placeholder="john@example.com" required>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Phone Number</label>
+                            <input type="tel" name="phone" class="form-control" placeholder="+1 234 567 890" required>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Password</label>
+                            <input type="password" name="password" class="form-control" placeholder="••••••••" required>
+                        </div>
+
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label fw-bold">Confirm Password</label>
+                            <input type="password" name="confirm_password" class="form-control" placeholder="••••••••" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-4 form-check">
+                        <input type="checkbox" class="form-check-input" id="terms" required>
+                        <label class="form-check-label text-muted small" for="terms">
+                            I agree to the <a href="#" class="text-decoration-none">Terms of Service</a> and <a href="#" class="text-decoration-none">Privacy Policy</a>.
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 btn-register text-white shadow-sm mb-4">
+                        Create My Account
+                    </button>
+
+                    <p class="text-center text-muted small">
+                        Already have an account? <a href="{% url 'login' %}" class="fw-bold text-primary text-decoration-none">Sign In</a>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,388 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+<div class="py-5 text-white" style="background: linear-gradient(135deg, #0a2647 0%, #0d6efd 100%);">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="display-5 fw-bold mb-3">{{ course.title }}</h1>
+                <p class="lead opacity-75 mb-4">{{ course.description }}</p>
+                <div class="d-flex gap-4">
+                    <span><i class="fas fa-user-tie me-2"></i>{{ course.instructor.name }}</span>
+                    <span><i class="fas fa-calendar-alt me-2"></i>{{ course.duration }}</span>
+                    <span><i class="fas fa-check-circle me-2"></i>Certificate Included</span>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-lg text-dark p-2">
+                    <img src="{{ course.thumbnail.url }}" class="rounded card-img-top mb-3">
+                    <div class="card-body text-center">
+                        <h2 class="fw-bold mb-3">₹{{ course.price }}</h2>
+                        <div class="d-grid gap-2">
+
+                            {% if user.is_authenticated %}
+
+                            {% if user.institute %}
+                            <a href="{% url 'course_edit' course.pk %}" class="btn btn-light border py-2">
+                                Edit Course
+                            </a>
+
+                            <a href="{% url 'course_delete' course.pk %}" class="btn btn-danger py-2">
+                                Delete
+                            </a>
+
+                            {% else %}
+
+                            {% if is_enrolled %}
+                            <button class="btn btn-success" disabled>
+                                Already Enrolled
+                            </button>
+                            {% else %}
+                            <a href="{% url 'courses_enroll' course.pk %}" class="btn btn-primary">
+                                Enroll Now
+                            </a>
+                            {% endif %}
+
+                            {% endif %}
+
+                            {% else %}
+
+                            <a href="{% url 'login' %}" class="btn btn-primary">
+                                Login to Enroll
+                            </a>
+
+                            {% endif %}
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container my-5">
+
+    <!-- Tabs -->
+    <ul class="nav nav-pills mb-4 gap-2" id="courseTabs" role="tablist">
+
+        <!-- Details Tab -->
+        <li class="nav-item" role="presentation">
+
+            <button class="nav-link active px-4"
+                    id="details-tab"
+                    data-bs-toggle="pill"
+                    data-bs-target="#details"
+                    type="button">
+
+                <i class="fas fa-info-circle me-2"></i>
+                Details
+
+            </button>
+
+        </li>
+
+        <!-- Notes Tab -->
+        <li class="nav-item" role="presentation">
+
+            <button class="nav-link px-4"
+                    id="notes-tab"
+                    data-bs-toggle="pill"
+                    data-bs-target="#notes"
+                    type="button">
+
+                <i class="fas fa-book me-2"></i>
+                Notes
+
+            </button>
+
+        </li>
+
+        <!-- Quiz Tab -->
+        <li class="nav-item" role="presentation">
+
+            <button class="nav-link px-4"
+                    id="quiz-tab"
+                    data-bs-toggle="pill"
+                    data-bs-target="#quiz"
+                    type="button">
+
+                <i class="fas fa-question-circle me-2"></i>
+                Quiz
+
+            </button>
+
+        </li>
+
+    </ul>
+
+
+    <!-- Tab Content -->
+    <div class="tab-content">
+
+        <!-- ================= DETAILS TAB ================= -->
+        <div class="tab-pane fade show active"
+             id="details"
+             role="tabpanel">
+
+            <div class="row">
+
+                <div class="col-md-8">
+
+                    <h4 class="fw-bold mb-4"
+                        style="color: #0a2647;">
+
+                        What You'll Learn
+
+                    </h4>
+
+                    <div class="bg-light p-4 rounded-4 mb-5 border-start border-primary border-4">
+
+                        <p style="white-space: pre-line;">
+                            {{ course.what_you_will_learn }}
+                        </p>
+
+                    </div>
+
+                    <h4 class="fw-bold mb-4"
+                        style="color: #0a2647;">
+
+                        Curriculum
+
+                    </h4>
+
+                    <div class="mb-5">
+
+                        <p class="p-3 border rounded shadow-sm bg-white"
+                           style="white-space: pre-line;">
+
+                            {{ course.curriculum }}
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-4">
+
+                    <div class="p-4 rounded-4 bg-white shadow-sm mb-4">
+
+                        <h5 class="fw-bold mb-3">
+                            Requirements
+                        </h5>
+
+                        <p class="small text-muted">
+                            {{ course.requirements|default:"No prerequisites" }}
+                        </p>
+
+                    </div>
+
+                    <div class="p-4 rounded-4 bg-white shadow-sm">
+
+                        <h5 class="fw-bold mb-3">
+                            Target Audience
+                        </h5>
+
+                        <p class="small text-muted">
+                            {{ course.target_audience }}
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- ================= NOTES TAB ================= -->
+        <div class="tab-pane fade"
+             id="notes"
+             role="tabpanel">
+
+            <!-- Notes Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4 p-3 bg-white rounded-4 shadow-sm border">
+
+                <div>
+
+                    <h5 class="fw-bold mb-1"
+                        style="color: #0a2647;">
+
+                        <i class="fas fa-sticky-note me-2 text-primary"></i>
+                        Course Notes
+
+                    </h5>
+
+                    <p class="text-muted small mb-0">
+                        Add and manage notes related to this course.
+                    </p>
+
+                </div>
+
+                <div class="d-flex gap-2">
+
+                    <!-- Add Note -->
+                    <a href="{% url 'add_note' course.pk %}"
+                       class="btn btn-outline-primary px-4">
+
+                        <i class="fas fa-book-open me-2"></i>
+                        Add Notes
+
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <!-- Notes List -->
+            {% if notes %}
+
+            <div class="row g-4">
+
+                {% for note in notes %}
+
+                <div class="col-md-6">
+
+                    <div class="card border-0 shadow-sm rounded-4 h-100">
+
+                        <div class="card-body">
+
+                            <h5 class="fw-bold mb-3">
+                                {{ note.title }}
+                            </h5>
+
+                            <p class="text-muted small mb-4">
+                                {{ note.description }}
+                            </p>
+
+                            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+
+                                <small class="text-secondary">
+                                    {{ note.created_at|date:"d M Y" }}
+                                </small>
+
+                                <div class="d-flex gap-2">
+
+                                    <!-- View -->
+                                    <a href="{{ note.file.url }}"
+                                       class="btn btn-primary btn-sm"
+                                       target="_blank">
+
+                                        <i class="fas fa-eye me-1"></i>
+                                        View
+
+                                    </a>
+
+                                    {% if user.is_authenticated %}
+
+                                        {% if user.institute or user.instructor %}
+
+                                        <!-- Edit -->
+                                        <a href="{% url 'edit_note' course.pk note.pk %}"
+                                           class="btn btn-warning btn-sm text-white">
+
+                                            <i class="fas fa-edit me-1"></i>
+                                            Edit
+
+                                        </a>
+
+                                        <!-- Delete -->
+                                        <a href=""
+                                           class="btn btn-danger btn-sm">
+
+                                            <i class="fas fa-trash me-1"></i>
+                                            Delete
+
+                                        </a>
+
+                                        {% endif %}
+
+                                    {% endif %}
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+            {% else %}
+
+            <div class="alert alert-light border rounded-4">
+
+                No notes uploaded yet.
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+
+
+        <!-- ================= QUIZ TAB ================= -->
+        <div class="tab-pane fade"
+             id="quiz"
+             role="tabpanel">
+
+            <div class="d-flex justify-content-between align-items-center mb-4 p-3 bg-white rounded-4 shadow-sm border">
+
+                <div>
+
+                    <h5 class="fw-bold mb-1"
+                        style="color: #0a2647;">
+
+                        <i class="fas fa-question-circle me-2 text-primary"></i>
+                        Course Quiz
+
+                    </h5>
+
+                    <p class="text-muted small mb-0">
+                        Add and manage quizzes for this course.
+                    </p>
+
+                </div>
+
+                {% if user.is_authenticated %}
+
+                    {% if user.institute or user.instructor %}
+
+                    <a href="{% url 'add_quiz' course.pk %}"
+                       class="btn btn-primary px-4">
+
+                        <i class="fas fa-plus me-2"></i>
+                        Add Quiz
+
+                    </a>
+
+                    {% endif %}
+
+                {% endif %}
+
+            </div>
+
+            <div class="alert alert-light border rounded-4">
+
+                No quizzes added yet.
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+```
+
+{% endblock %}

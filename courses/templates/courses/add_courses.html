@@ -1,0 +1,221 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+<style>
+    :root {
+        --dark-blue: #0a2647;
+        --brand-blue: #0d6efd;
+        --soft-blue: #f0f5ff;
+    }
+
+    body { background-color: #f4f7f9; }
+
+    .form-container {
+        border-radius: 20px;
+        overflow: hidden;
+        border: none;
+    }
+
+    .sidebar-gradient {
+        background: linear-gradient(180deg, var(--dark-blue) 0%, var(--brand-blue) 100%);
+        color: white;
+    }
+
+    .form-control, .form-select {
+        border-radius: 10px;
+        padding: 12px;
+        border: 1px solid #dee2e6;
+        background-color: #f8f9fa;
+    }
+
+    .form-control:focus {
+        border-color: var(--brand-blue);
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.1);
+        background-color: #fff;
+    }
+
+    .preview-box {
+        width: 100%;
+        height: 200px;
+        border: 2px dashed rgba(255,255,255,0.3);
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+    .btn-submit {
+        background-color: var(--dark-blue);
+        color: white;
+        padding: 12px 30px;
+        border-radius: 10px;
+        font-weight: 600;
+        transition: 0.3s;
+    }
+
+    .btn-submit:hover {
+        background-color: #05162a;
+        color: white;
+        transform: translateY(-2px);
+    }
+</style>
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-11">
+            <div class="card shadow-lg form-container">
+                <div class="row g-0">
+                    <div class="col-md-4 sidebar-gradient p-5 d-none d-md-block">
+                        <h3 class="fw-bold mb-4">Course Creator</h3>
+                        <p class="opacity-75 mb-5">Fill in the details to launch your professional course. A great thumbnail and description increase student enrollment by 40%.</p>
+                        
+                        <div class="mb-4">
+                            <label class="small fw-bold text-uppercase opacity-50 d-block mb-2">Thumbnail Preview</label>
+                            <div class="preview-box" id="thumbnailPreview">
+                                {% if form.instance.thumbnail %}
+                                    <img src="{{ form.instance.thumbnail.url }}" class="img-fluid w-100 h-100" style="object-fit: cover;">
+                                {% else %}
+                                    <i class="fas fa-image fa-3x opacity-25"></i>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mt-auto pt-5">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="bg-white text-primary rounded-circle p-2 me-3">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <span class="small">SEO Optimized Listing</span>
+                            </div>
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="bg-white text-primary rounded-circle p-2 me-3">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <span class="small">Auto-generate Curriculum</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-8 bg-white p-5">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h2 class="fw-bold text-dark">{{ title }}</h2>
+                            <a href="{% url 'course_list' %}" class="btn-close"></a>
+                        </div>
+
+                        <form method="POST" enctype="multipart/form-data" class="needs-validation">
+                            {% csrf_token %}
+                            
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label class="form-label fw-semibold">Course Title</label>
+                                    {{ form.title }}
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">Assigned Instructor</label>
+                                    {{ form.instructor }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">Price (INR)</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light">₹</span>
+                                        {{ form.price }}
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">Duration</label>
+                                    {{ form.duration }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">Course Thumbnail</label>
+                                    {{ form.thumbnail }}
+                                </div>
+
+                                <div class="col-12">
+                                    <label class="form-label fw-semibold">Course Description</label>
+                                    {{ form.description }}
+                                </div>
+
+                                <div class="col-12 mt-4">
+                                    <div class="p-3 rounded-3" style="background-color: var(--soft-blue);">
+                                        <h6 class="fw-bold text-primary mb-3"><i class="fas fa-list-ul me-2"></i>Curriculum & Outcomes</h6>
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label class="small fw-bold">What will they learn?</label>
+                                                {{ form.what_you_will_learn }}
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="small fw-bold">Syllabus Details</label>
+                                                {{ form.curriculum }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 mt-4">
+    <div class="row g-4">
+
+        <!-- Requirements -->
+        <div class="col-md-6">
+            <div class="p-4 bg-light rounded-4 shadow-sm h-100">
+                <h5 class="fw-bold mb-3">
+                    <i class="fas fa-clipboard-list text-primary me-2"></i>
+                    Requirements
+                </h5>
+
+                {{ form.requirements }}
+            </div>
+        </div>
+
+        <!-- Target Audience -->
+        <div class="col-md-6">
+            <div class="p-4 bg-light rounded-4 shadow-sm h-100">
+                <h5 class="fw-bold mb-3">
+                    <i class="fas fa-users text-primary me-2"></i>
+                    Target Audience
+                </h5>
+
+                {{ form.target_audience }}
+            </div>
+        </div>
+
+    </div>
+</div>
+<div class="col-12 mt-4">
+    <div class="p-4 bg-light rounded-4 shadow-sm">
+        <h5 class="fw-bold mb-3">
+            <i class="fas fa-certificate text-primary me-2"></i>
+            Certificate Information
+        </h5>
+
+        {{ form.certificate_info }}
+    </div>
+</div>
+                            </div>
+
+                            <div class="mt-5 d-flex justify-content-end gap-3">
+                                <a href="{% url 'course_list' %}" class="btn btn-light border px-4">Discard</a>
+                                <button type="submit" class="btn btn-submit shadow">
+                                    <i class="fas fa-rocket me-2"></i>Publish Course
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Live Thumbnail Preview Script
+    document.querySelector('input[name="thumbnail"]').onchange = evt => {
+        const [file] = evt.target.files
+        if (file) {
+            const preview = document.getElementById('thumbnailPreview');
+            preview.innerHTML = `<img src="${URL.createObjectURL(file)}" class="img-fluid w-100 h-100" style="object-fit: cover;">`;
+        }
+    }
+</script>
+{% endblock %}

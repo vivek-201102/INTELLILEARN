@@ -1,0 +1,151 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}Contact Us | IntelliLearn Support{% endblock %}
+
+{% block content %}
+<style>
+    .contact-wrapper {
+        padding: 60px 0;
+    }
+    .info-card {
+        border: none;
+        border-radius: 15px;
+        padding: 30px;
+        background: #ffffff;
+        transition: transform 0.3s ease;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        height: 100%;
+    }
+    .info-card:hover {
+        transform: translateY(-5px);
+    }
+    .icon-circle {
+        width: 50px;
+        height: 50px;
+        background: #e7f1ff;
+        color: #0d6efd;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        margin-bottom: 20px;
+    }
+    .form-control {
+        padding: 12px 15px;
+        border-radius: 10px;
+        border: 1px solid #dee2e6;
+    }
+    .form-control:focus {
+        box-shadow: 0 0 0 0.25 margin rgba(13, 110, 253, 0.1);
+        border-color: #0d6efd;
+    }
+    .map-container {
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        height: 400px;
+        background: #e9ecef;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+</style>
+
+<div class="container contact-wrapper">
+    <!-- Header Section -->
+    <div class="text-center mb-5">
+        <h1 class="fw-bold">Get in <span class="text-primary">Touch</span></h1>
+        <p class="text-muted">Have questions about our smart proctoring or course enrollment? We're here to help.</p>
+    </div>
+
+    <div class="row g-4 mb-5">
+        <!-- Contact Methods -->
+        <div class="col-md-4">
+            <div class="info-card">
+                <div class="icon-circle">
+                    <i class="fas fa-envelope"></i>
+                </div>
+                <h5>Email Us</h5>
+                <p class="text-muted">Our support team usually responds within 24 hours.</p>
+                <a href="mailto:support@intellilearn.com" class="text-decoration-none fw-bold">support@intellilearn.com</a>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="info-card">
+                <div class="icon-circle" style="background: #e8f5e9; color: #2e7d32;">
+                    <i class="fas fa-phone-alt"></i>
+                </div>
+                <h5>Call Us</h5>
+                <p class="text-muted">Mon-Fri from 9am to 6pm for urgent queries.</p>
+                <a href="tel:+1234567890" class="text-decoration-none fw-bold">+1 (234) 567-890</a>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="info-card">
+                <div class="icon-circle" style="background: #fff4e5; color: #ef6c00;">
+                    <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <h5>Our Office</h5>
+                <p class="text-muted">123 Tech Park, Innovation Way<br>Silicon Valley, CA 94043</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-5">
+        <!-- Contact Form -->
+        <div class="col-lg-6">
+            <div class="bg-white p-4 p-md-5 rounded-4 shadow-sm">
+                <h3 class="mb-4 fw-bold">Send a Message</h3>
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold">Full Name</label>
+                            <input type="text" class="form-control" placeholder="John Doe" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold">Email Address</label>
+                            <input type="email" class="form-control" placeholder="john@example.com" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Subject</label>
+                        <select class="form-select form-control">
+                            <option>Technical Support</option>
+                            <option>Course Inquiry</option>
+                            <option>Payment Issue</option>
+                            <option>Other</option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">Message</label>
+                        <textarea class="form-control" rows="5" placeholder="How can we help you?" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg w-100 shadow-sm">Send Message</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Visual Map/Side Content -->
+        <div class="col-lg-6">
+            <div class="map-container">
+                <!-- You can replace this div with an actual Google Maps iframe -->
+                <div class="text-center p-4">
+                    <i class="fas fa-map-marked-alt fa-3x text-muted mb-3"></i>
+                    <h4>Location Map</h4>
+                    <p class="text-muted small">Interactive map integration would appear here.</p>
+                </div>
+            </div>
+            
+            <div class="mt-4 p-4 bg-light rounded-4">
+                <h5 class="fw-bold mb-3">Quick Support FAQ</h5>
+                <p class="small text-muted mb-2"><i class="fas fa-check-circle text-success me-2"></i> Instant password reset available in login.</p>
+                <p class="small text-muted mb-2"><i class="fas fa-check-circle text-success me-2"></i> Certificate verification is automated.</p>
+                <p class="small text-muted"><i class="fas fa-check-circle text-success me-2"></i> 24/7 Server status monitoring.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
