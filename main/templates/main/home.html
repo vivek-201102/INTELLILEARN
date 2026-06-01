@@ -1,0 +1,160 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}IntelliLearn | Elevate Your Learning Experience{% endblock %}
+
+{% block content %}
+<style>
+    /* Hero Section Styling */
+    .hero-section {
+        padding: 80px 0;
+        background: linear-gradient(135deg, #ffffff 0%, #f0f7ff 100%);
+        border-radius: 20px;
+        margin-bottom: 60px;
+    }
+    .hero-title {
+        font-size: 3.5rem;
+        font-weight: 800;
+        color: #1a2a6c;
+        line-height: 1.2;
+    }
+    .text-gradient {
+        color:  #0d6efd;
+        webkit-background-clip: text;
+        webkit-text-fill-color: transparent;
+    }
+    .hero-image {
+        border-radius: 30px;
+        box-shadow: 20px 20px 60px #d1d9e6, -20px -20px 60px #ffffff;
+    }
+
+    /* Feature Card Styling */
+    .feature-card {
+        border: none;
+        border-radius: 15px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        background: #fff;
+    }
+    .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+    }
+    .icon-box {
+        width: 60px;
+        height: 60px;
+        background: #e7f1ff;
+        color: #0d6efd;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+    }
+
+    /* Stats Section */
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #0d6efd;
+    }
+    .create_ew_A{
+        color: white;
+        text-decoration: none;
+    }
+</style>
+
+<!-- 1. Hero Section -->
+<section class="hero-section mt-4">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <span class="badge bg-primary-soft text-primary mb-3 px-3 py-2 rounded-pill" style="background: #e7f1ff;">
+                    Next-Gen Learning Management
+                </span>
+                <h1 class="hero-title mb-4">Master Your Skills with <span class="text-gradient">IntelliLearn</span></h1>
+                <p class="lead text-muted mb-5">An AI-powered ecosystem for seamless learning, smart examinations, and real-time performance analytics.</p>
+                <div class="d-flex gap-3">
+                    <a href="#" class="btn btn-primary btn-lg px-4 py-3 shadow">Explore Courses</a>
+                    <a href="#" class="btn btn-outline-dark btn-lg px-4 py-3"><i class="fas fa-play-circle me-2"></i>How it Works</a>
+                </div>
+            </div>
+            <div class="col-lg-6 d-none d-lg-block">
+                <!-- Using a high-quality educational illustration placeholder -->
+                <img src="https://img.freepik.com/free-vector/online-certification-concept_23-2148575636.jpg" alt="E-learning Illustration" class="img-fluid hero-image">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 2. Stats Row -->
+<div class="row text-center mb-5">
+    <div class="col-md-3">
+        <div class="stat-number">10k+</div>
+        <p class="text-muted">Active Students</p>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-number">500+</div>
+        <p class="text-muted">Expert Courses</p>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-number">95%</div>
+        <p class="text-muted">Satisfaction Rate</p>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-number">1M+</div>
+        <p class="text-muted">Quizzes Attempted</p>
+    </div>
+</div>
+
+<hr class="my-5 opacity-0">
+
+<!-- 3. Key Modules / Features -->
+<div class="text-center mb-5">
+    <h2 class="fw-bold">Why Choose IntelliLearn?</h2>
+    <p class="text-muted">Built with advanced features to ensure academic integrity and growth.</p>
+</div>
+
+<div class="row g-4">
+    <!-- Feature 1 -->
+    <div class="col-md-4">
+        <div class="card h-100 feature-card p-4">
+            <div class="icon-box">
+                <i class="fas fa-user-shield"></i>
+            </div>
+            <h4>AI Proctoring</h4>
+            <p class="text-muted">Smart webcam monitoring and tab-switching detection to ensure 100% exam integrity.</p>
+        </div>
+    </div>
+    <!-- Feature 2 -->
+    <div class="col-md-4">
+        <div class="card h-100 feature-card p-4">
+            <div class="icon-box" style="background: #fff4e5; color: #ff9800;">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <h4>Adaptive Testing</h4>
+            <p class="text-muted">Our AI adjusts question difficulty in real-time based on your current performance level.</p>
+        </div>
+    </div>
+    <!-- Feature 3 -->
+    <div class="col-md-4">
+        <div class="card h-100 feature-card p-4">
+            <div class="icon-box" style="background: #e8f5e9; color: #4caf50;">
+                <i class="fas fa-certificate"></i>
+            </div>
+            <h4>Smart Certificates</h4>
+            <p class="text-muted">Earn QR-verified digital certificates instantly upon course or exam completion.</p>
+        </div>
+    </div>
+</div>
+
+<!-- 4. Call to Action (CTA) -->
+<section class="mt-5 py-5 text-center bg-dark text-white rounded-4 shadow-lg">
+    <div class="container">
+        <h2 class="mb-4">Ready to Start Your Journey?</h2>
+        <p class="mb-4 opacity-75">Join thousands of students and teachers already using IntelliLearn.</p>
+        <button class="btn btn-primary btn-lg px-5"><a class="create_ew_A" href="{% url 'registration' %}">Create Free Account</a></button>
+    </div>
+</section>
+
+{% endblock %}

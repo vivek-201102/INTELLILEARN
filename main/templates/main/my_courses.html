@@ -1,0 +1,162 @@
+{% extends 'main/student_base.html' %}
+{% load static %}
+
+{% block title %}My Courses{% endblock %}
+
+{% block student_content %}
+
+<style>
+    .course-card {
+        border: none;
+        border-radius: 20px;
+        overflow: hidden;
+        transition: 0.3s;
+        background: white;
+    }
+
+    .course-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+    }
+
+    .course-thumbnail {
+        height: 200px;
+        object-fit: cover;
+    }
+
+    .progress {
+        height: 8px;
+        border-radius: 20px;
+    }
+
+    .empty-state {
+        background: white;
+        border-radius: 20px;
+        padding: 80px 20px;
+        text-align: center;
+    }
+</style>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+        <h2 class="fw-bold mb-1">
+            My Courses
+        </h2>
+
+        <p class="text-muted mb-0">
+            Continue your learning journey
+        </p>
+    </div>
+
+    <a href="{% url 'course_list' %}"
+       class="btn btn-primary rounded-pill px-4">
+
+        Browse Courses
+
+    </a>
+
+</div>
+
+{% if enrollments %}
+
+<div class="row g-4">
+
+    {% for enrollment in enrollments %}
+
+    <div class="col-lg-4 col-md-6">
+
+        <div class="card course-card shadow-sm h-100">
+
+            {% if enrollment.course.thumbnail %}
+                <img src="{{ enrollment.course.thumbnail.url }}"
+                     class="card-img-top course-thumbnail">
+            {% endif %}
+
+            <div class="card-body d-flex flex-column p-4">
+
+                <div class="d-flex justify-content-between mb-3">
+
+                    <span class="badge bg-primary-subtle text-primary">
+                        {{ enrollment.course.duration }}
+                    </span>
+
+                    <small class="text-muted">
+                        ₹{{ enrollment.course.price }}
+                    </small>
+
+                </div>
+
+                <h5 class="fw-bold mb-2">
+                    {{ enrollment.course.title }}
+                </h5>
+
+                <p class="text-muted small mb-4">
+                    {{ enrollment.course.description|truncatewords:18 }}
+                </p>
+
+                <div class="mb-3">
+
+                    <div class="d-flex justify-content-between small mb-1">
+                        <span>Progress</span>
+                        <span>65%</span>
+                    </div>
+
+                    <div class="progress">
+
+                        <div class="progress-bar"
+                             style="width:65%"></div>
+
+                    </div>
+
+                </div>
+
+                <div class="mt-auto">
+
+                    <a href="{% url 'course_detail' enrollment.course.pk %}"
+                       class="btn btn-primary w-100 rounded-pill">
+
+                        Continue Learning
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    {% endfor %}
+
+</div>
+
+{% else %}
+
+<div class="empty-state shadow-sm">
+
+    <img src="https://cdn-icons-png.flaticon.com/512/4076/4076478.png"
+         width="120"
+         class="mb-4">
+
+    <h3 class="fw-bold mb-3">
+        No Enrolled Courses Yet
+    </h3>
+
+    <p class="text-muted mb-4">
+        Start learning by enrolling in professional courses.
+    </p>
+
+    <a href="{% url 'course_list' %}"
+       class="btn btn-primary px-5 rounded-pill">
+
+        Explore Courses
+
+    </a>
+
+</div>
+
+{% endif %}
+
+{% endblock %}
