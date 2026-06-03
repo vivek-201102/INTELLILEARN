@@ -21,4 +21,9 @@ urlpatterns = [
         name='instructor_courses'
     ),
 
+  path(
+        'contact-messages/',
+        views.contact_messages_list,
+        name='contact_messages_list'
+    ),
 ]

@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from courses.models import Course, Instructor, Enrollment
+from .models import ContactMessage
 
 
 def home(request):
@@ -114,3 +115,36 @@ def instructor_courses(request):
     }
 
     return render(request, 'main/instructor_courses.html', context)
+
+
+
+
+def contact(request):
+    if request.method == 'POST':
+        ContactMessage.objects.create(
+            full_name=request.POST.get('full_name'),
+            email=request.POST.get('email'),
+            subject=request.POST.get('subject'),
+            message=request.POST.get('message')
+        )
+
+        messages.success(
+            request,
+            "Your message has been sent successfully!"
+        )
+
+        return redirect('contact')
+
+    return render(request, 'main/contact.html')
+
+
+
+
+def contact_messages_list(request):
+    messages = ContactMessage.objects.all().order_by('-created_at')
+
+    return render(
+        request,
+        'main/contact_messages_list.html',
+        {'messages': messages}
+    )

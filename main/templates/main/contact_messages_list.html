@@ -1,0 +1,96 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+<div class="container py-5">
+
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-dark mb-1">Contact Messages</h2>
+            <p class="text-muted small mb-0">Manage and review inquiries submitted by users.</p>
+        </div>
+        <a href="javascript:history.back()" class="btn btn-outline-secondary px-4 shadow-sm">
+            <i class="bi bi-arrow-left me-2"></i>Back
+        </a>
+    </div>
+
+    <!-- Quick Stats Overview (Optional but professional) -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm bg-light">
+                <div class="card-body py-3">
+                    <div class="text-muted small uppercase fw-semibold">Total Messages</div>
+                    <div class="fs-4 fw-bold text-primary">{{ messages|length }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Messages Table Card -->
+    <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light border-bottom text-secondary small text-uppercase">
+                        <tr>
+                            <th class="ps-4 py-3" style="width: 20%;">Sender</th>
+                            <th class="py-3" style="width: 25%;">Email</th>
+                            <th class="py-3" style="width: 20%;">Subject</th>
+                            <th class="py-3" style="width: 20%;">Message</th>
+                            <th class="py-3" style="width: 10%;">Received</th>
+                            <th class="pe-4 py-3 text-end" style="width: 5%;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for msg in messages %}
+                        <tr class="align-middle">
+                            <!-- Sender Name -->
+                            <td class="ps-4 fw-semibold text-dark">
+                                {{ msg.full_name }}
+                            </td>
+                            <!-- Email -->
+                            <td class="text-secondary">
+                                <a href="mailto:{{ msg.email }}" class="text-decoration-none text-reset">
+                                    {{ msg.email }}
+                                </a>
+                            </td>
+                            <!-- Subject -->
+                            <td>
+                                <span class="badge bg-light text-dark border border-secondary-subtle fw-normal px-2 py-1">
+                                    {{ msg.subject }}
+                                </span>
+                            </td>
+                            <!-- Message Fragment -->
+                            <td class="text-muted small text-truncate" style="max-width: 200px;">
+                                {{ msg.message|truncatechars:50 }}
+                            </td>
+                            <!-- Date -->
+                            <td class="text-secondary small">
+                                {{ msg.created_at|date:"M d, Y" }}
+                            </td>
+                            <!-- View Detail Button -->
+                            <td class="pe-4 text-end">
+                                <a href="#" class="btn btn-sm btn-light border" title="View Message">
+                                    View
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center py-5 text-muted">
+                                <div class="mb-2 fs-3 text-secondary-subtle">
+                                    <i class="bi bi-inbox"></i>
+                                </div>
+                                <p class="mb-0 fw-medium">No messages found</p>
+                                <small class="text-secondary">Inbox is currently empty.</small>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
