@@ -1,0 +1,18 @@
+{% extends 'main/base.html' %}
+
+{% block title %}IntelliLearn | Smart Learning & Examination{% endblock %}
+
+{% block content %}
+<section class="text-center py-5">
+    <h1 class="display-4 fw-bold mb-3">
+        Learn Smarter with <span class="text-primary">IntelliLearn</span>
+    </h1>
+    <p class="lead text-muted col-lg-8 mx-auto">
+        Courses, secure online exams, and insights for students and institutes — all in one platform.
+    </p>
+    <div class="mt-4">
+        <a href="{% url 'course_list' %}" class="btn btn-primary btn-lg me-2">Browse Courses</a>
+        <a href="{% url 'registration' %}" class="btn btn-outline-primary btn-lg">Get Started</a>
+    </div>
+</section>
+{% endblock %}

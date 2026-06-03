@@ -21,11 +21,11 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    path('',include('courses.urls')),
-    path('',include('accounts.urls')),
     path('', include('main.urls')),
-    path('admin/', admin.site.urls),
+    path('', include('accounts.urls')),
+    path('', include('courses.urls')),
     path('', include('exam.urls')),
+    path('admin/', admin.site.urls),
 ]
 # Serve media files during development
 if settings.DEBUG:

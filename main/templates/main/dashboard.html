@@ -1,0 +1,30 @@
+{% extends 'main/base.html' %}
+
+{% block title %}My Dashboard | IntelliLearn{% endblock %}
+
+{% block content %}
+<h1 class="fw-bold mb-4">My <span class="text-primary">Dashboard</span></h1>
+
+{% if enrollments %}
+<div class="row g-4">
+    {% for enrollment in enrollments %}
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 shadow-sm border-0">
+            <div class="card-body">
+                <h5 class="card-title fw-bold">{{ enrollment.course.title }}</h5>
+                <p class="text-muted small mb-3">Enrolled {{ enrollment.enrolled_at|date:"M d, Y" }}</p>
+                <a href="{% url 'course_detail' enrollment.course.pk %}" class="btn btn-primary btn-sm">
+                    Continue Learning
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="alert alert-info">
+    You have not enrolled in any courses yet.
+    <a href="{% url 'course_list' %}" class="alert-link">Browse courses</a> to get started.
+</div>
+{% endif %}
+{% endblock %}

@@ -130,11 +130,3 @@ STATICFILES_DIRS = [
 # settings.py
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
-
-# Root urls.py (not the app one)
-from django.conf import settings
-from django.conf.urls.static import static
-
-urlpatterns = [
-    # ... your other urls
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
