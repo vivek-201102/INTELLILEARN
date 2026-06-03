@@ -1,117 +1,56 @@
 {% extends 'main/base.html' %}
 
+{% block title %}Instructors | IntelliLearn{% endblock %}
+
 {% block content %}
-<style>
-    /* Custom Blue Theme Styles */
-    :root {
-        --brand-blue: #0d6efd;
-        --dark-blue: #0a2647;
-        --soft-blue: #f0f5ff;
-    }
 
-    body {
-        background-color: #f8f9fa;
-    }
-
-    .instructor-card {
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        border-radius: 15px;
-        overflow: hidden;
-    }
-
-    .instructor-card:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 15px 30px rgba(13, 110, 253, 0.15) !important;
-    }
-
-    .image-container {
-        position: relative;
-        overflow: hidden;
-    }
-
-    .experience-badge {
-        position: absolute;
-        top: 15px;
-        right: 15px;
-        background: rgba(10, 38, 71, 0.85);
-        color: white;
-        padding: 5px 12px;
-        border-radius: 50px;
-        font-size: 0.75rem;
-        backdrop-filter: blur(4px);
-    }
-
-    .btn-brand {
-        background-color: var(--brand-blue);
-        color: white;
-        border-radius: 8px;
-    }
-
-    .btn-brand:hover {
-        background-color: var(--dark-blue);
-        color: white;
-    }
-
-    .text-brand {
-        color: var(--dark-blue);
-    }
-</style>
-
-<div class="container my-5">
-    <!-- Header Section -->
-    <div class="row align-items-center mb-5">
-        <div class="col-md-6">
-            <h2 class="fw-bold text-brand mb-1">Expert Faculty</h2>
-            <p class="text-muted">Learn from industry leaders and academic excellence.</p>
+<section class="page-hero mb-4" data-il-animate>
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+        <div>
+            <span class="badge badge-il-soft mb-2 px-3 py-2 rounded-pill">Our team</span>
+            <h1 class="page-hero-title mb-1">Expert Faculty</h1>
+            <p class="text-muted mb-0">Learn from industry leaders and academic excellence.</p>
         </div>
-        <div class="col-md-6 text-md-end">
-            <a href="{% url 'instructor_create' %}" class="btn btn-brand px-4 py-2 shadow-sm">
-                <i class="fas fa-user-plus me-2"></i>Add Instructor
-            </a>
-        </div>
+        <a href="{% url 'instructor_create' %}" class="btn btn-primary rounded-pill px-4">
+            <i class="fas fa-user-plus me-2"></i>Add Instructor
+        </a>
     </div>
+</section>
 
-    <!-- Instructor Grid -->
-    <div class="row">
-        {% for i in instructors %}
-        <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
-            <div class="card h-100 border-0 shadow-sm instructor-card">
-                <div class="image-container">
-                    <img src="{{ i.profile_image.url }}" class="card-img-top" style="height: 260px; object-fit: cover;" alt="{{ i.name }}">
-                    <span class="experience-badge">{{ i.experience }} Exp</span>
-                </div>
-                
-                <div class="card-body text-center">
-                    <h5 class="fw-bold mb-1 text-brand">{{ i.name }}</h5>
-                    <p class="text-primary small fw-semibold mb-3">{{ i.qualification }}</p>
-                    
-                    <div class="d-grid gap-2">
-                        <a href="{% url 'instructor_detail' i.pk %}" class="btn btn-outline-primary btn-sm rounded-pill">
-                            View Profile
-                        </a>
-                        <div class="d-flex gap-1">
-                            <a href="{% url 'instructor_edit' i.pk %}" class="btn btn-light btn-sm flex-grow-1 text-muted">
-                                <i class="fas fa-edit"></i>
-                            </a>
-                            <a href="{% url 'instructor_delete' i.pk %}" class="btn btn-light btn-sm flex-grow-1 text-danger">
-                                <i class="fas fa-trash-alt"></i>
-                            </a>
-                        </div>
-                    </div>
+{% include 'main/partials/list_toolbar.html' %}
+
+{% if has_filters and not page_obj.object_list %}
+<div class="alert alert-info mb-4">No instructors match "<strong>{{ q }}</strong>".</div>
+{% endif %}
+
+{% if page_obj.object_list %}
+<div class="row g-4">
+    {% for i in page_obj %}
+    <div class="col-lg-3 col-md-4 col-sm-6" data-il-animate>
+        <div class="card card-il h-100 overflow-hidden text-center">
+            <div class="position-relative">
+                <img src="{{ i.profile_image.url }}" class="card-img-top" style="height: 220px; object-fit: cover;" alt="{{ i.name }}">
+                <span class="position-absolute top-0 end-0 m-2 badge bg-dark">{{ i.experience }}</span>
+            </div>
+            <div class="card-body p-4">
+                <h5 class="fw-bold mb-1">{{ i.name }}</h5>
+                <p class="text-primary small fw-semibold mb-3">{{ i.qualification }}</p>
+                <a href="{% url 'instructor_detail' i.pk %}" class="btn btn-outline-primary btn-sm rounded-pill w-100 mb-2">View Profile</a>
+                <div class="d-flex gap-1">
+                    <a href="{% url 'instructor_edit' i.pk %}" class="btn btn-light btn-sm flex-grow-1"><i class="fas fa-edit"></i></a>
+                    <a href="{% url 'instructor_delete' i.pk %}" class="btn btn-light btn-sm flex-grow-1 text-danger"><i class="fas fa-trash-alt"></i></a>
                 </div>
             </div>
         </div>
-        {% empty %}
-        <div class="col-12">
-            <div class="text-center py-5 bg-white rounded-4 shadow-sm">
-                <div class="mb-3 text-brand opacity-25">
-                    <i class="fas fa-users-slash fa-4x"></i>
-                </div>
-                <h4 class="text-muted">No instructors onboarded yet</h4>
-                <a href="{% url 'instructor_create' %}" class="text-decoration-none">Start by adding your first team member</a>
-            </div>
-        </div>
-        {% endfor %}
     </div>
+    {% endfor %}
 </div>
+{% include 'main/partials/pagination.html' %}
+{% else %}
+{% if not has_filters %}
+<div class="shadow-sm">{% include 'main/partials/empty_state.html' with icon='fa-users' title='No instructors yet' description='Add your first instructor to get started.' %}</div>
+<div class="text-center mt-3"><a href="{% url 'instructor_create' %}" class="btn btn-primary rounded-pill">Add instructor</a></div>
+{% endif %}
+{% endif %}
+
 {% endblock %}

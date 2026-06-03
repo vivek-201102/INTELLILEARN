@@ -1,18 +1,72 @@
 {% extends 'main/base.html' %}
+{% load static %}
 
-{% block title %}IntelliLearn | Smart Learning & Examination{% endblock %}
+{% block title %}IntelliLearn | Elevate Your Learning Experience{% endblock %}
 
 {% block content %}
-<section class="text-center py-5">
-    <h1 class="display-4 fw-bold mb-3">
-        Learn Smarter with <span class="text-primary">IntelliLearn</span>
-    </h1>
-    <p class="lead text-muted col-lg-8 mx-auto">
-        Courses, secure online exams, and insights for students and institutes — all in one platform.
-    </p>
-    <div class="mt-4">
-        <a href="{% url 'course_list' %}" class="btn btn-primary btn-lg me-2">Browse Courses</a>
-        <a href="{% url 'registration' %}" class="btn btn-outline-primary btn-lg">Get Started</a>
+
+<section class="page-hero mt-2" data-il-animate>
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <span class="badge badge-il-soft mb-3 px-3 py-2 rounded-pill">Next-Gen Learning Management</span>
+                <h1 class="page-hero-title mb-4">Master Your Skills with <span class="text-gradient-il">IntelliLearn</span></h1>
+                <p class="lead text-muted mb-5">An AI-powered ecosystem for seamless learning, smart examinations, and real-time performance analytics.</p>
+                <div class="d-flex flex-wrap gap-3">
+                    <a href="{% url 'course_list' %}" class="btn btn-primary btn-lg px-4 py-3 shadow">Explore Courses</a>
+                    <a href="{% url 'contact' %}" class="btn btn-outline-dark btn-lg px-4 py-3"><i class="fas fa-envelope me-2"></i>Contact Us</a>
+                </div>
+            </div>
+            <div class="col-lg-6 d-none d-lg-block il-animate il-delay-2">
+                <img src="https://img.freepik.com/free-vector/online-certification-concept_23-2148575636.jpg"
+                     alt="E-learning" class="img-fluid rounded-4 shadow" style="border-radius: 24px !important;">
+            </div>
+        </div>
     </div>
 </section>
+
+<div class="row text-center mb-5 g-4" data-il-animate>
+    <div class="col-6 col-md-3"><div class="stat-number-il">10k+</div><p class="text-muted small">Active Students</p></div>
+    <div class="col-6 col-md-3"><div class="stat-number-il">500+</div><p class="text-muted small">Expert Courses</p></div>
+    <div class="col-6 col-md-3"><div class="stat-number-il">95%</div><p class="text-muted small">Satisfaction</p></div>
+    <div class="col-6 col-md-3"><div class="stat-number-il">1M+</div><p class="text-muted small">Quizzes Attempted</p></div>
+</div>
+
+<div class="text-center mb-5 il-animate">
+    <h2 class="fw-bold">Why Choose IntelliLearn?</h2>
+    <p class="text-muted">Built with advanced features to ensure academic integrity and growth.</p>
+</div>
+
+<div class="row g-4 mb-5">
+    <div class="col-md-4" data-il-animate>
+        <div class="card h-100 feature-card-il p-4">
+            <div class="icon-box-il"><i class="fas fa-user-shield"></i></div>
+            <h4 class="fw-bold">AI Proctoring</h4>
+            <p class="text-muted mb-0">Smart monitoring and tab detection for exam integrity.</p>
+        </div>
+    </div>
+    <div class="col-md-4" data-il-animate>
+        <div class="card h-100 feature-card-il p-4">
+            <div class="icon-box-il" style="background:#fff4e5;color:#ff9800;"><i class="fas fa-chart-line"></i></div>
+            <h4 class="fw-bold">Adaptive Testing</h4>
+            <p class="text-muted mb-0">Question difficulty adjusts to student performance.</p>
+        </div>
+    </div>
+    <div class="col-md-4" data-il-animate>
+        <div class="card h-100 feature-card-il p-4">
+            <div class="icon-box-il" style="background:#e8f5e9;color:#4caf50;"><i class="fas fa-certificate"></i></div>
+            <h4 class="fw-bold">Smart Certificates</h4>
+            <p class="text-muted mb-0">Digital certificates on course and exam completion.</p>
+        </div>
+    </div>
+</div>
+
+<section class="cta-section-il py-5 text-center text-white" data-il-animate>
+    <div class="container">
+        <h2 class="fw-bold mb-3">Ready to Start Your Journey?</h2>
+        <p class="mb-4 opacity-75">Join thousands of students and teachers already using IntelliLearn.</p>
+        <a href="{% url 'registration' %}" class="btn btn-light btn-lg px-5 fw-semibold">Create Free Account</a>
+    </div>
+</section>
+
 {% endblock %}

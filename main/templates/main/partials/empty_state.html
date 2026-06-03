@@ -1,0 +1,12 @@
+<div class="empty-state-card text-center py-5 px-4">
+    <div class="empty-state-icon mb-3">
+        <i class="fas {{ icon|default:'fa-inbox' }}"></i>
+    </div>
+    <h4 class="fw-bold mb-2">{{ title }}</h4>
+    <p class="text-muted mb-4 mx-auto" style="max-width: 420px;">{{ description }}</p>
+    {% if action_url and action_label %}
+    <a href="{{ action_url }}" class="btn btn-primary rounded-pill px-4">
+        {{ action_label }}
+    </a>
+    {% endif %}
+</div>

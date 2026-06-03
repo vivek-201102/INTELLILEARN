@@ -1,9 +1,14 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Course, Question, Quiz
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
-from django.contrib.auth import authenticate, login
 from django.contrib import messages
+
+from courses.models import Course
+from courses.permissions import user_can_manage_course, course_manage_denied_response
+from .models import Question, Quiz
+
+
+def _deny_quiz_manage(request, quiz):
+    return course_manage_denied_response(request, quiz.course)
 
 # Create your views here.
 @login_required
@@ -13,6 +18,10 @@ def add_quiz(request, course_pk):
         Course,
         pk=course_pk
     )
+
+    denied = course_manage_denied_response(request, course)
+    if denied:
+        return denied
 
     if request.method == "POST":
 
@@ -47,63 +56,97 @@ def add_quiz(request, course_pk):
 def add_question(request, quiz_pk):
 
     quiz = get_object_or_404(
-        Quiz,
+        Quiz.objects.select_related('course'),
         pk=quiz_pk
     )
+    denied = _deny_quiz_manage(request, quiz)
+    if denied:
+        return denied
+
+    questions = quiz.questions.all()
 
     if request.method == "POST":
+        action = request.POST.get('action', 'add')
+
+        if action == 'finish':
+            if not questions.exists():
+                messages.warning(
+                    request,
+                    "Add at least one question before finishing the quiz."
+                )
+                return redirect('add_question', quiz_pk=quiz.pk)
+
+            messages.success(
+                request,
+                f'Quiz "{quiz.title}" is complete and published.'
+            )
+            return redirect('view_quiz', quiz_pk=quiz.pk)
+
+        question_text = request.POST.get('question', '').strip()
+        option1 = request.POST.get('option1', '').strip()
+        option2 = request.POST.get('option2', '').strip()
+        option3 = request.POST.get('option3', '').strip()
+        option4 = request.POST.get('option4', '').strip()
+        correct_answer = request.POST.get('correct_answer', '').strip()
+
+        if not all([question_text, option1, option2, option3, option4, correct_answer]):
+            messages.error(request, "Please fill in all fields.")
+            return redirect('add_question', quiz_pk=quiz.pk)
+
+        valid_answers = {option1, option2, option3, option4}
+        if correct_answer not in valid_answers:
+            messages.error(
+                request,
+                "Correct answer must match one of the four options exactly."
+            )
+            return redirect('add_question', quiz_pk=quiz.pk)
 
         Question.objects.create(
-
             quiz=quiz,
-
-            question=request.POST.get('question'),
-
-            option1=request.POST.get('option1'),
-
-            option2=request.POST.get('option2'),
-
-            option3=request.POST.get('option3'),
-
-            option4=request.POST.get('option4'),
-
-            correct_answer=request.POST.get('correct_answer')
+            question=question_text,
+            option1=option1,
+            option2=option2,
+            option3=option3,
+            option4=option4,
+            correct_answer=correct_answer,
         )
 
         messages.success(
             request,
-            "Question added successfully."
+            "Question added. Add another below, or finish the quiz."
         )
-
-        return redirect(
-            'add_question',
-            quiz_pk=quiz.pk
-        )
+        return redirect('add_question', quiz_pk=quiz.pk)
 
     return render(
         request,
         'exam/add_question.html',
         {
-            'quiz': quiz
+            'quiz': quiz,
+            'course': quiz.course,
+            'questions': questions,
         }
     )
 
 
+@login_required
 def view_quiz(request, quiz_pk):
 
     quiz = get_object_or_404(
-        Quiz,
+        Quiz.objects.select_related('course'),
         pk=quiz_pk
     )
 
     questions = quiz.questions.all()
+    can_manage_course = user_can_manage_course(request.user, quiz.course)
 
     return render(
         request,
         'exam/view_quiz.html',
         {
             'quiz': quiz,
-            'questions': questions
+            'course': quiz.course,
+            'questions': questions,
+            'can_manage_course': can_manage_course,
         }
     )
 
@@ -112,9 +155,13 @@ def view_quiz(request, quiz_pk):
 def edit_question(request, pk):
 
     question = get_object_or_404(
-        Question,
+        Question.objects.select_related('quiz__course'),
         pk=pk
     )
+
+    denied = _deny_quiz_manage(request, question.quiz)
+    if denied:
+        return denied
 
     if request.method == "POST":
 
@@ -158,9 +205,13 @@ def edit_question(request, pk):
 def delete_question(request, pk):
 
     question = get_object_or_404(
-        Question,
+        Question.objects.select_related('quiz__course'),
         pk=pk
     )
+
+    denied = _deny_quiz_manage(request, question.quiz)
+    if denied:
+        return denied
 
     quiz_pk = question.quiz.pk
 
@@ -192,9 +243,13 @@ def delete_question(request, pk):
 def edit_quiz(request, pk):
 
     quiz = get_object_or_404(
-        Quiz,
+        Quiz.objects.select_related('course'),
         pk=pk
     )
+
+    denied = _deny_quiz_manage(request, quiz)
+    if denied:
+        return denied
 
     if request.method == "POST":
 
@@ -226,9 +281,13 @@ def edit_quiz(request, pk):
 def delete_quiz(request, pk):
 
     quiz = get_object_or_404(
-        Quiz,
+        Quiz.objects.select_related('course'),
         pk=pk
     )
+
+    denied = _deny_quiz_manage(request, quiz)
+    if denied:
+        return denied
 
     course_pk = quiz.course.pk
 
@@ -241,9 +300,9 @@ def delete_quiz(request, pk):
             "Quiz deleted successfully."
         )
 
+        from django.urls import reverse
         return redirect(
-            'course_detail',
-            pk=course_pk
+            reverse('course_detail', kwargs={'pk': course_pk}) + '?tab=quiz'
         )
 
     return render(

@@ -1,0 +1,26 @@
+<nav class="sidebar-nav">
+    <a href="{% url 'instructor_dashboard' %}"
+       class="{% if request.resolver_match.url_name == 'instructor_dashboard' %}active{% endif %}">
+        <i class="fas fa-th-large"></i>
+        <span>Dashboard</span>
+    </a>
+    <a href="{% url 'instructor_courses' %}"
+       class="{% if request.resolver_match.url_name == 'instructor_courses' %}active{% endif %}">
+        <i class="fas fa-book"></i>
+        <span>My Courses</span>
+    </a>
+    <a href="{% url 'course_list' %}">
+        <i class="fas fa-globe"></i>
+        <span>Public Catalog</span>
+    </a>
+    <a href="{% url 'instructor_profile' %}"
+       class="{% if request.resolver_match.url_name == 'instructor_profile' %}active{% endif %}">
+        <i class="fas fa-user"></i>
+        <span>Profile</span>
+    </a>
+    <a href="{% url 'instructor_settings' %}"
+       class="{% if request.resolver_match.url_name == 'instructor_settings' %}active{% endif %}">
+        <i class="fas fa-cog"></i>
+        <span>Settings</span>
+    </a>
+</nav>

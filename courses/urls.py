@@ -83,6 +83,13 @@ urlpatterns = [
         name='edit_note'
     ),
 
+    # Delete Note
+    path(
+        'course/<int:course_pk>/note/delete/<int:note_pk>/',
+        views.delete_note,
+        name='delete_note'
+    ),
+
 
     # =========================
     # Course Purchase

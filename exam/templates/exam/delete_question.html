@@ -1,0 +1,18 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Delete Question{% endblock %}
+
+{% block content %}
+<div class="container py-5" style="max-width: 520px;">
+    <div class="card border-0 shadow-sm rounded-4 p-4 text-center">
+        <i class="fas fa-exclamation-triangle text-warning fa-2x mb-3"></i>
+        <h4 class="fw-bold mb-2">Delete this question?</h4>
+        <p class="text-muted mb-4">{{ question.question|truncatewords:20 }}</p>
+        <form method="POST" class="d-flex justify-content-center gap-2">
+            {% csrf_token %}
+            <a href="{% url 'view_quiz' question.quiz.pk %}" class="btn btn-outline-secondary px-4">Cancel</a>
+            <button type="submit" class="btn btn-danger px-4">Delete</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

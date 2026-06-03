@@ -1,32 +1,40 @@
 {% extends 'main/base.html' %}
 
+{% block title %}Create Quiz | {{ course.title }}{% endblock %}
+
 {% block content %}
 
-<div class="container py-5">
+<div class="container py-5" style="max-width: 720px;">
 
-    <div class="card p-4 shadow">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'course_detail' course.pk %}">Course</a></li>
+            <li class="breadcrumb-item active">New quiz</li>
+        </ol>
+    </nav>
 
-        <h3>Create Quiz</h3>
+    <div class="card border-0 shadow-sm rounded-4 p-4">
+        <h3 class="fw-bold mb-1">Create Quiz</h3>
+        <p class="text-muted mb-4">Step 1 of 2 — Name your quiz for <strong>{{ course.title }}</strong></p>
 
         <form method="POST">
-
             {% csrf_token %}
-
+            <label class="form-label fw-semibold">Quiz title</label>
             <input type="text"
                    name="title"
-                   class="form-control mb-3"
-                   placeholder="Quiz Title"
+                   class="form-control mb-4"
+                   placeholder="e.g. Module 1 Assessment"
                    required>
 
-            <button type="submit"
-                    class="btn btn-primary">
-
-                Create Quiz
-
-            </button>
-
+            <div class="d-flex flex-wrap gap-2">
+                <button type="submit" class="btn btn-primary px-4">
+                    <i class="fas fa-arrow-right me-1"></i> Continue to add questions
+                </button>
+                <a href="{% url 'course_detail' course.pk %}" class="btn btn-outline-secondary px-4">
+                    Cancel
+                </a>
+            </div>
         </form>
-
     </div>
 
 </div>

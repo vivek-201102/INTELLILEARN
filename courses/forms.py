@@ -60,6 +60,31 @@ class InstructorForm(forms.ModelForm):
 
 
 
+class InstructorProfileForm(forms.ModelForm):
+    """Instructor self-service profile (no username/password)."""
+
+    class Meta:
+        model = Instructor
+        fields = [
+            'name',
+            'qualification',
+            'experience',
+            'profile_image',
+            'bio',
+        ]
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control'}),
+            'qualification': forms.TextInput(attrs={'class': 'form-control'}),
+            'experience': forms.TextInput(attrs={'class': 'form-control'}),
+            'profile_image': forms.FileInput(attrs={'class': 'form-control'}),
+            'bio': forms.Textarea(attrs={'class': 'form-control', 'rows': 5}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['profile_image'].required = False
+
+
 class CourseForm(forms.ModelForm):
     class Meta:
         model = Course

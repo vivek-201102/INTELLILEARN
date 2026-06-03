@@ -1,65 +1,157 @@
 {% extends 'main/base.html' %}
 
+{% block title %}Add Questions | {{ quiz.title }}{% endblock %}
+
 {% block content %}
+
+<style>
+    .quiz-step-badge {
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+    }
+    .question-preview {
+        border-left: 3px solid #0d6efd;
+        background: #f8fafc;
+    }
+</style>
 
 <div class="container py-5">
 
-    <div class="card shadow p-4">
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'course_detail' course.pk %}">{{ course.title }}</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'view_quiz' quiz.pk %}">{{ quiz.title }}</a></li>
+            <li class="breadcrumb-item active">Add questions</li>
+        </ol>
+    </nav>
 
-        <h3 class="mb-4">
-            Add Question
-        </h3>
+    <div class="row g-4">
 
-        <form method="POST">
+        <!-- Left: form -->
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm rounded-4 p-4">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <span class="quiz-step-badge text-primary">Step 2 of 2</span>
+                        <h3 class="fw-bold mb-1 mt-1">Add Question</h3>
+                        <p class="text-muted small mb-0">Quiz: <strong>{{ quiz.title }}</strong></p>
+                    </div>
+                    <span class="badge bg-primary-subtle text-primary px-3 py-2">
+                        {{ questions|length }} added
+                    </span>
+                </div>
 
-            {% csrf_token %}
+                <form method="POST" id="addQuestionForm">
+                    {% csrf_token %}
 
-            <textarea name="question"
-                      class="form-control mb-3"
-                      placeholder="Question"
-                      required></textarea>
+                    <label class="form-label fw-semibold">Question</label>
+                    <textarea name="question"
+                              class="form-control mb-3"
+                              rows="3"
+                              placeholder="Enter your question"
+                              required></textarea>
 
-            <input type="text"
-                   name="option1"
-                   class="form-control mb-2"
-                   placeholder="Option 1"
-                   required>
+                    <label class="form-label fw-semibold">Options</label>
+                    <input type="text" name="option1" id="option1" class="form-control mb-2" placeholder="Option 1" required>
+                    <input type="text" name="option2" id="option2" class="form-control mb-2" placeholder="Option 2" required>
+                    <input type="text" name="option3" id="option3" class="form-control mb-2" placeholder="Option 3" required>
+                    <input type="text" name="option4" id="option4" class="form-control mb-3" placeholder="Option 4" required>
 
-            <input type="text"
-                   name="option2"
-                   class="form-control mb-2"
-                   placeholder="Option 2"
-                   required>
+                    <label class="form-label fw-semibold">Correct answer</label>
+                    <select name="correct_answer" id="correct_answer" class="form-select mb-4" required>
+                        <option value="" selected disabled>Choose the correct option</option>
+                        <option value="">— Fill options above first —</option>
+                    </select>
+                    <p class="text-muted small mb-4">Must match one of the four options exactly.</p>
 
-            <input type="text"
-                   name="option3"
-                   class="form-control mb-2"
-                   placeholder="Option 3"
-                   required>
+                    <div class="d-flex flex-wrap gap-2">
+                        <button type="submit" name="action" value="add" class="btn btn-success px-4">
+                            <i class="fas fa-plus me-1"></i> Add question
+                        </button>
+                        <button type="submit"
+                                name="action"
+                                value="finish"
+                                class="btn btn-primary px-4"
+                                formnovalidate>
+                            <i class="fas fa-check me-1"></i> Finish quiz
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
 
-            <input type="text"
-                   name="option4"
-                   class="form-control mb-3"
-                   placeholder="Option 4"
-                   required>
+        <!-- Right: progress & actions -->
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm rounded-4 p-4 mb-3">
+                <h6 class="fw-bold mb-3"><i class="fas fa-list-ol me-2 text-primary"></i>Quiz progress</h6>
 
-            <input type="text"
-                   name="correct_answer"
-                   class="form-control mb-3"
-                   placeholder="Correct Answer"
-                   required>
+                {% if questions %}
+                <div class="mb-3" style="max-height: 280px; overflow-y: auto;">
+                    {% for q in questions %}
+                    <div class="question-preview rounded-3 p-3 mb-2 small">
+                        <strong>Q{{ forloop.counter }}.</strong> {{ q.question|truncatewords:12 }}
+                    </div>
+                    {% endfor %}
+                </div>
+                <a href="{% url 'view_quiz' quiz.pk %}" class="btn btn-outline-primary btn-sm w-100 mb-2">
+                    Preview full quiz
+                </a>
+                {% else %}
+                <p class="text-muted small mb-3">No questions yet. Add at least one before finishing.</p>
+                {% endif %}
 
-            <button type="submit"
-                    class="btn btn-success">
+                <form method="POST" class="mb-0">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="finish">
+                    <button type="submit"
+                            class="btn btn-primary w-100"
+                            {% if not questions %}disabled title="Add at least one question first"{% endif %}>
+                        <i class="fas fa-check-circle me-1"></i> Complete &amp; publish quiz
+                    </button>
+                </form>
+            </div>
 
-                Add Question
-
-            </button>
-
-        </form>
+            <div class="card border-0 bg-light rounded-4 p-4">
+                <h6 class="fw-bold mb-2">Done for now?</h6>
+                <p class="text-muted small mb-3">You can return later to add more questions.</p>
+                <a href="{% url 'course_detail' course.pk %}" class="btn btn-outline-secondary btn-sm w-100">
+                    <i class="fas fa-arrow-left me-1"></i> Back to course
+                </a>
+            </div>
+        </div>
 
     </div>
-
 </div>
+
+<script>
+(function () {
+    const opts = ['option1', 'option2', 'option3', 'option4'];
+    const select = document.getElementById('correct_answer');
+
+    function refreshCorrectAnswerOptions() {
+        const values = opts
+            .map(id => document.getElementById(id).value.trim())
+            .filter(v => v.length > 0);
+        const current = select.value;
+        select.innerHTML = '<option value="" disabled>Choose the correct option</option>';
+        values.forEach((v, i) => {
+            const el = document.createElement('option');
+            el.value = v;
+            el.textContent = 'Option ' + (i + 1) + ': ' + (v.length > 40 ? v.slice(0, 40) + '…' : v);
+            select.appendChild(el);
+        });
+        if (current && values.includes(current)) {
+            select.value = current;
+        }
+    }
+
+    opts.forEach(id => {
+        document.getElementById(id).addEventListener('input', refreshCorrectAnswerOptions);
+    });
+    refreshCorrectAnswerOptions();
+})();
+</script>
 
 {% endblock %}

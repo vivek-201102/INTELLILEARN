@@ -1,0 +1,17 @@
+<form method="get" class="search-bar-il d-flex align-items-center gap-2 flex-grow-1" role="search">
+    <i class="fas fa-search text-muted ms-1"></i>
+    <input type="search"
+           name="q"
+           value="{{ q }}"
+           placeholder="{{ search_placeholder|default:'Search…' }}"
+           class="form-control border-0 shadow-none p-0"
+           autocomplete="off">
+    <button type="submit" class="btn btn-primary btn-search">
+        Search
+    </button>
+    {% if q %}
+    <a href="{{ clear_url|default:request.path }}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+        Clear
+    </a>
+    {% endif %}
+</form>

@@ -1,16 +1,40 @@
 from django.urls import path
-
 from . import views
 
 urlpatterns = [
+    path('dashboard/', views.dashboard, name='dashboard'),
     path('', views.home, name='home'),
     path('about/', views.about, name='about'),
-    path('contact/', views.contact, name='contact'),
     path('faq/', views.faq, name='faq'),
-    path('dashboard/', views.dashboard, name='dashboard'),
+    path('contact/', views.contact, name='contact'),
+    path('my_courses/', views.my_courses,name='my_courses'),
+       
     path(
-        'instructor-dashboard/',
-        views.InstructorDashboardRedirect.as_view(),
-        name='instructor_dashboard',
+    'instructor/dashboard/',
+    views.instructor_dashboard,
+    name='instructor_dashboard'),
+
+    path(
+        'instructor/courses/',
+        views.instructor_courses,
+        name='instructor_courses'
+    ),
+
+    path(
+        'instructor/profile/',
+        views.instructor_profile,
+        name='instructor_profile'
+    ),
+
+    path(
+        'instructor/settings/',
+        views.instructor_settings,
+        name='instructor_settings'
+    ),
+
+  path(
+        'contact-messages/',
+        views.contact_messages_list,
+        name='contact_messages_list'
     ),
 ]

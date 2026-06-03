@@ -1,80 +1,95 @@
 {% extends 'main/base.html' %}
 
+{% block title %}{{ quiz.title }} | Quiz{% endblock %}
+
 {% block content %}
 
 <div class="container py-5">
 
-    <div class="d-flex justify-content-between mb-4">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'course_detail' course.pk %}">{{ course.title }}</a></li>
+            <li class="breadcrumb-item active">{{ quiz.title }}</li>
+        </ol>
+    </nav>
 
-        <h2>{{ quiz.title }}</h2>
-
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
         <div>
-
-            <a href="{% url 'edit_quiz' quiz.pk %}"
-               class="btn btn-warning">
-
-                Edit Quiz
-
-            </a>
-
-            <a href="{% url 'delete_quiz' quiz.pk %}"
-               class="btn btn-danger">
-
-                Delete Quiz
-
-            </a>
-
-        </div>
-
-    </div>
-
-    {% for question in questions %}
-
-    <div class="card shadow-sm mb-4">
-
-        <div class="card-body">
-
-            <h5>
-                Q{{ forloop.counter }}.
-                {{ question.question }}
-            </h5>
-
-            <ul class="mt-3">
-
-                <li>{{ question.option1 }}</li>
-
-                <li>{{ question.option2 }}</li>
-
-                <li>{{ question.option3 }}</li>
-
-                <li>{{ question.option4 }}</li>
-
-            </ul>
-
-            <p class="text-success fw-bold">
-                Correct Answer:
-                {{ question.correct_answer }}
+            <h2 class="fw-bold mb-1">{{ quiz.title }}</h2>
+            <p class="text-muted mb-0">
+                {{ questions|length }} question{{ questions|length|pluralize }}
+                · Course: {{ course.title }}
             </p>
-
-            <a href="{% url 'edit_question' question.pk %}"
-               class="btn btn-warning btn-sm">
-
-                Edit
-
-            </a>
-
-            <a href="{% url 'delete_question' question.pk %}"
-               class="btn btn-danger btn-sm">
-
-                Delete
-
-            </a>
-
         </div>
-
+        <div class="d-flex flex-wrap gap-2">
+            {% if can_manage_course %}
+            <a href="{% url 'add_question' quiz.pk %}" class="btn btn-success">
+                <i class="fas fa-plus me-1"></i> Add question
+            </a>
+            <a href="{% url 'edit_quiz' quiz.pk %}" class="btn btn-outline-warning">
+                Edit title
+            </a>
+            <a href="{% url 'delete_quiz' quiz.pk %}" class="btn btn-outline-danger">
+                Delete quiz
+            </a>
+            {% endif %}
+            <a href="{% url 'course_detail' course.pk %}?tab=quiz" class="btn btn-primary">
+                <i class="fas fa-arrow-left me-1"></i> Back to course
+            </a>
+        </div>
     </div>
 
+    {% if questions %}
+    {% for question in questions %}
+    <div class="card border-0 shadow-sm rounded-4 mb-3">
+        <div class="card-body p-4">
+            <h5 class="fw-bold mb-3">Q{{ forloop.counter }}. {{ question.question }}</h5>
+            <ul class="list-unstyled mb-3">
+                <li class="mb-2"><span class="badge bg-light text-dark me-2">A</span>{{ question.option1 }}</li>
+                <li class="mb-2"><span class="badge bg-light text-dark me-2">B</span>{{ question.option2 }}</li>
+                <li class="mb-2"><span class="badge bg-light text-dark me-2">C</span>{{ question.option3 }}</li>
+                <li class="mb-2"><span class="badge bg-light text-dark me-2">D</span>{{ question.option4 }}</li>
+            </ul>
+            {% if can_manage_course %}
+            <p class="text-success small fw-semibold mb-3">
+                <i class="fas fa-check-circle me-1"></i> Correct: {{ question.correct_answer }}
+            </p>
+            <div class="d-flex gap-2">
+                <a href="{% url 'edit_question' question.pk %}" class="btn btn-warning btn-sm">Edit</a>
+                <a href="{% url 'delete_question' question.pk %}" class="btn btn-danger btn-sm">Delete</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
     {% endfor %}
+
+    {% if can_manage_course %}
+    <div class="card border-0 bg-light rounded-4 p-4 mt-4">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <div>
+                <h6 class="fw-bold mb-1">Quiz management</h6>
+                <p class="text-muted small mb-0">Add more questions or return to the course page.</p>
+            </div>
+            <div class="d-flex flex-wrap gap-2">
+                <a href="{% url 'add_question' quiz.pk %}" class="btn btn-success">Add another question</a>
+                <a href="{% url 'course_detail' course.pk %}?tab=quiz" class="btn btn-primary">Done — back to course</a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% else %}
+    <div class="shadow-sm mb-4">
+        {% include 'main/partials/empty_state.html' with icon='fa-question-circle' title='This quiz has no questions yet' description='Add at least one question to publish this quiz for students.' %}
+    </div>
+    {% if can_manage_course %}
+    <div class="text-center">
+        <a href="{% url 'add_question' quiz.pk %}" class="btn btn-primary rounded-pill px-4">
+            Add first question
+        </a>
+    </div>
+    {% endif %}
+    {% endif %}
 
 </div>
 

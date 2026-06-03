@@ -1,4 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
+from django.db.models import Q
 from .models import Instructor, Course, Enrollment, Note
 from .forms import InstructorForm, CourseForm
 from django.contrib.auth.decorators import login_required
@@ -6,16 +8,23 @@ from accounts.models import Institute
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from django.contrib import messages
-
-
-from .forms import NotesForm
-from accounts.models import Institute
-from .models import Instructor
+from main.utils import paginate, get_search_term, list_page_context
+from .permissions import user_can_manage_course, course_manage_denied_response
 
 
 def instructor_list(request):
-    instructors = Instructor.objects.all()
-    return render(request, 'courses/list.html', {'instructors': instructors})
+    queryset = Instructor.objects.all().order_by('name')
+    q = get_search_term(request)
+    if q:
+        queryset = queryset.filter(
+            Q(name__icontains=q)
+            | Q(qualification__icontains=q)
+            | Q(experience__icontains=q)
+            | Q(bio__icontains=q)
+        )
+    page_obj = paginate(request, queryset, per_page=8)
+    context = list_page_context(request, page_obj, 'Search instructors by name or qualification…')
+    return render(request, 'courses/list.html', context)
 
 def instructor_detail(request, pk):
     instructor = get_object_or_404(Instructor, pk=pk)
@@ -50,10 +59,18 @@ def instructor_delete(request, pk):
     return render(request, 'courses/confirm_delete.html', {'instructor': instructor})
 
 def course_list(request):
-    print("hghjgjhgjhgjh")
-    courses = Course.objects.order_by('-created_at')
-    print("hjgjhghjgjh",courses)
-    return render(request, 'courses/courses_list.html', {'courses': courses})
+    queryset = Course.objects.select_related('instructor').order_by('-created_at')
+    q = get_search_term(request)
+    if q:
+        queryset = queryset.filter(
+            Q(title__icontains=q)
+            | Q(description__icontains=q)
+            | Q(instructor__name__icontains=q)
+            | Q(duration__icontains=q)
+        )
+    page_obj = paginate(request, queryset, per_page=9)
+    context = list_page_context(request, page_obj, 'Search courses by title, topic, or instructor…')
+    return render(request, 'courses/courses_list.html', context)
 
 def course_detail(request, pk):
 
@@ -69,11 +86,16 @@ def course_detail(request, pk):
         ).exists()
 
     notes = course.notes.all()
+    quizzes = course.quizzes.prefetch_related('questions').all()
+
+    can_manage_course = user_can_manage_course(request.user, course)
 
     return render(request, 'courses/courses_detail.html', {
         'course': course,
         'is_enrolled': is_enrolled,
-        'notes': notes
+        'notes': notes,
+        'quizzes': quizzes,
+        'can_manage_course': can_manage_course,
     })
         
 
@@ -161,20 +183,23 @@ def institute_students(request):
 
     institute = request.user.institute
 
-    enrollments = Enrollment.objects.filter(
+    queryset = Enrollment.objects.filter(
         course__institute=institute
     ).select_related(
         'student',
         'course'
-    )
+    ).order_by('-enrolled_at')
 
-    return render(
-        request,
-        'courses/institute_students.html',
-        {
-            'enrollments': enrollments
-        }
-    )
+    q = get_search_term(request)
+    if q:
+        queryset = queryset.filter(
+            Q(student__username__icontains=q)
+            | Q(student__email__icontains=q)
+            | Q(course__title__icontains=q)
+        )
+    page_obj = paginate(request, queryset, per_page=15)
+    context = list_page_context(request, page_obj, 'Search by student, email, or course…')
+    return render(request, 'courses/institute_students.html', context)
 
 
 @login_required
@@ -182,18 +207,21 @@ def course_students(request, pk):
 
     course = get_object_or_404(Course, pk=pk)
 
-    enrollments = Enrollment.objects.filter(
+    queryset = Enrollment.objects.filter(
         course=course
-    ).select_related('student')
+    ).select_related('student').order_by('-enrolled_at')
 
-    return render(
-        request,
-        'courses/course_students.html',
-        {
-            'course': course,
-            'enrollments': enrollments
-        }
-    )
+    q = get_search_term(request)
+    if q:
+        queryset = queryset.filter(
+            Q(student__username__icontains=q)
+            | Q(student__email__icontains=q)
+        )
+    page_obj = paginate(request, queryset, per_page=12)
+    context = list_page_context(request, page_obj, 'Search students by name or email…')
+    context['course'] = course
+    context['total_students'] = Enrollment.objects.filter(course=course).count()
+    return render(request, 'courses/course_students.html', context)
 
 
 def instructor_create(request):
@@ -270,10 +298,14 @@ def manage_note(request, course_pk, note_pk=None):
 
     course = get_object_or_404(Course, pk=course_pk)
 
+    denied = course_manage_denied_response(request, course)
+    if denied:
+        return denied
+
     # Edit Mode
     if note_pk:
 
-        note = get_object_or_404(Note, pk=note_pk)
+        note = get_object_or_404(Note, pk=note_pk, course=course)
 
     # Add Mode
     else:
@@ -319,8 +351,7 @@ def manage_note(request, course_pk, note_pk=None):
             )
 
         return redirect(
-            'course_detail',
-            pk=course.pk
+            reverse('course_detail', kwargs={'pk': course.pk}) + '?tab=notes'
         )
 
     return render(
@@ -328,7 +359,35 @@ def manage_note(request, course_pk, note_pk=None):
         'courses/manage_note.html',
         {
             'course': course,
-            'note': note
+            'note': note,
+            'is_edit': note is not None,
+        }
+    )
+
+
+@login_required
+def delete_note(request, course_pk, note_pk):
+
+    course = get_object_or_404(Course, pk=course_pk)
+    note = get_object_or_404(Note, pk=note_pk, course=course)
+
+    denied = course_manage_denied_response(request, course)
+    if denied:
+        return denied
+
+    if request.method == 'POST':
+        note.delete()
+        messages.success(request, 'Note deleted successfully.')
+        return redirect(
+            reverse('course_detail', kwargs={'pk': course.pk}) + '?tab=notes'
+        )
+
+    return render(
+        request,
+        'courses/delete_note.html',
+        {
+            'course': course,
+            'note': note,
         }
     )
 

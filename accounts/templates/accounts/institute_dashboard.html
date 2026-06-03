@@ -272,8 +272,19 @@
                                     Add Faculty
                                 </a>
                             </button>
-                            <button class="btn btn-sm btn-outline-secondary px-3">Create Course</button>
-                            <button class="btn btn-sm btn-outline-secondary px-3">View Analytics</button>
+                             <button class="btn btn-sm btn-primary px-3">
+                                <a href="{% url 'course_create' %}" class="text-white text-decoration-none">
+                                     Create Course
+                                </a>
+                            </button>
+                         
+                             <button class="btn btn-sm btn-primary px-3">
+                                <a href="{% url 'contact_messages_list' %}" class="text-white text-decoration-none">
+                                     Contact Messages
+                                </a>
+                            </button>
+                            
+                            
                         </div>
                     </div>
                 </div>

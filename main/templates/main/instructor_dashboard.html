@@ -1,0 +1,126 @@
+{% extends 'main/instructor_base.html' %}
+
+{% block title %}Instructor Dashboard{% endblock %}
+
+{% block instructor_content %}
+<style>
+    .welcome-heading {
+        font-weight: 700;
+        letter-spacing: -0.03em;
+        color: #0f172a;
+    }
+
+    /* Premium Stat Cards Styles */
+    .stat-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 24px;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 20px -8px rgba(0, 0, 0, 0.08);
+    }
+
+    /* Dynamic Left Border Accents per Card */
+    .stat-card.accent-blue { border-left: 4px solid #3b82f6; }
+    .stat-card.accent-purple { border-left: 4px solid #a855f7; }
+    .stat-card.accent-amber { border-left: 4px solid #f59e0b; }
+
+    .stat-card h3 {
+        font-size: 2.25rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 4px;
+        letter-spacing: -0.04em;
+    }
+
+    .stat-card p {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0;
+    }
+
+    .stat-icon {
+        position: absolute;
+        right: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 2.5rem;
+        color: #f1f5f9;
+        z-index: 1;
+        pointer-events: none;
+        transition: color 0.2s ease;
+    }
+    
+    .stat-card:hover .stat-icon {
+        color: #e2e8f0;
+    }
+</style>
+
+<!-- Welcome Row Header -->
+<div class="d-flex align-items-center justify-content-between mb-5">
+    <div>
+        <h2 class="welcome-heading mb-1">Welcome back, {{ instructor.name }} 👋</h2>
+        <p class="text-muted mb-0">Here's an overview of your platform performance metrics.</p>
+    </div>
+</div>
+
+<!-- Dashboard Analytics Row -->
+<div class="row g-4">
+
+    <!-- Card 1: Total Courses -->
+    <div class="col-sm-6 col-lg-4">
+
+    <a href="{% url 'instructor_courses' %}"
+       class="text-decoration-none">
+
+        <div class="stat-card accent-blue">
+
+            <i class="bi bi-collection-play stat-icon"></i>
+
+            <div class="position-relative" style="z-index: 2;">
+
+                <h3>{{ total_courses }}</h3>
+
+                <p>Total Courses</p>
+
+            </div>
+
+        </div>
+
+    </a>
+
+</div>
+
+    <!-- Card 2: Total Students -->
+    <div class="col-sm-6 col-lg-4">
+        <div class="stat-card accent-purple">
+            <i class="bi bi-people stat-icon"></i>
+            <div class="position-relative" style="z-index: 2;">
+                <h3>{{ total_students }}</h3>
+                <p>Total Students</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card 3: Rating Profile -->
+    <div class="col-sm-6 col-lg-4">
+        <div class="stat-card accent-amber">
+            <i class="bi bi-star-fill stat-icon"></i>
+            <div class="position-relative" style="z-index: 2;">
+                <h3>{{ rating }} <span style="font-size: 1.2rem; color: #cbd5e1;">/ 5.0</span></h3>
+                <p>Instructor Rating</p>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

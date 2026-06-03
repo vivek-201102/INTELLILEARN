@@ -1,86 +1,47 @@
 {% extends 'main/base.html' %}
 
+{% block title %}Enrolled Students | IntelliLearn{% endblock %}
+
 {% block content %}
 
-<div class="container py-5">
+{% include 'main/partials/page_hero.html' with hero_badge='Institute' hero_title='Enrolled Students' hero_subtitle='Students enrolled across your institute courses.' %}
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+{% include 'main/partials/list_toolbar.html' %}
 
-        <div>
-            <h2 class="fw-bold">
-                Enrolled Students
-            </h2>
+{% if has_filters and not page_obj.object_list %}
+<div class="alert alert-info mb-4">No results for "<strong>{{ q }}</strong>".</div>
+{% endif %}
 
-            <p class="text-muted">
-                Students enrolled in your courses
-            </p>
-        </div>
-
+{% if page_obj.object_list %}
+<div class="card card-il overflow-hidden il-animate">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th class="ps-4">Student</th>
+                    <th>Course</th>
+                    <th>Email</th>
+                    <th>Enrolled</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for enrollment in page_obj %}
+                <tr>
+                    <td class="ps-4 fw-semibold">{{ enrollment.student.username }}</td>
+                    <td>{{ enrollment.course.title }}</td>
+                    <td class="text-muted">{{ enrollment.student.email }}</td>
+                    <td>{{ enrollment.enrolled_at|date:"d M Y" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
-
-    <div class="card border-0 shadow-sm rounded-4">
-
-        <div class="card-body p-0">
-
-            <table class="table align-middle mb-0">
-
-                <thead class="table-light">
-
-                    <tr>
-                        <th>Student</th>
-                        <th>Course</th>
-                        <th>Email</th>
-                        <th>Enrolled Date</th>
-                    </tr>
-
-                </thead>
-
-                <tbody>
-
-                    {% for enrollment in enrollments %}
-
-                    <tr>
-
-                        <td>
-                            {{ enrollment.student.username }}
-                        </td>
-
-                        <td>
-                            {{ enrollment.course.title }}
-                        </td>
-
-                        <td>
-                            {{ enrollment.student.email }}
-                        </td>
-
-                        <td>
-                            {{ enrollment.enrolled_at|date:"d M Y" }}
-                        </td>
-
-                    </tr>
-
-                    {% empty %}
-
-                    <tr>
-
-                        <td colspan="4" class="text-center py-5">
-
-                            No students enrolled yet.
-
-                        </td>
-
-                    </tr>
-
-                    {% endfor %}
-
-                </tbody>
-
-            </table>
-
-        </div>
-
-    </div>
-
 </div>
+{% include 'main/partials/pagination.html' %}
+{% else %}
+{% if not has_filters %}
+<div class="shadow-sm">{% include 'main/partials/empty_state.html' with icon='fa-users' title='No students enrolled yet' description='Enrollments will appear here when students join your courses.' %}</div>
+{% endif %}
+{% endif %}
 
 {% endblock %}

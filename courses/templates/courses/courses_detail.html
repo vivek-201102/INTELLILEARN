@@ -1,58 +1,162 @@
 {% extends 'main/base.html' %}
 
+{% block title %}{{ course.title }} | IntelliLearn{% endblock %}
+
 {% block content %}
-<div class="py-5 text-white" style="background: linear-gradient(135deg, #0a2647 0%, #0d6efd 100%);">
+<style>
+    .course-hero {
+        background: linear-gradient(135deg, #0a2647 0%, #0d6efd 100%);
+    }
+
+    /* Unified tab bar */
+    .course-tabs {
+        background: #fff;
+        border-radius: 16px;
+        padding: 8px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+        border: 1px solid #e9ecef;
+        gap: 6px;
+    }
+
+    .course-tabs .nav-link {
+        border-radius: 12px;
+        font-weight: 600;
+        color: #495057;
+        padding: 12px 24px;
+        border: none;
+        transition: all 0.2s ease;
+    }
+
+    .course-tabs .nav-link:hover {
+        background: #f0f7ff;
+        color: #0d6efd;
+    }
+
+    .course-tabs .nav-link.active {
+        background: #0d6efd;
+        color: #fff;
+        box-shadow: 0 4px 12px rgba(13, 110, 253, 0.35);
+    }
+
+    .course-tabs .nav-link.active i {
+        color: #fff;
+    }
+
+    .course-tabs .nav-link:not(.active) i {
+        color: #0d6efd;
+    }
+
+    .tab-panel-card {
+        background: #fff;
+        border-radius: 16px;
+        border: 1px solid #e9ecef;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+    }
+
+    .tab-panel-header {
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid #f1f3f5;
+    }
+
+    .tab-panel-body {
+        padding: 1.5rem;
+    }
+
+    .note-card, .quiz-card {
+        border: 1px solid #e9ecef;
+        border-radius: 14px;
+        transition: box-shadow 0.2s, transform 0.2s;
+        height: 100%;
+    }
+
+    .note-card:hover, .quiz-card:hover {
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        transform: translateY(-2px);
+    }
+
+    .note-file-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        background: #e7f1ff;
+        color: #0d6efd;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        flex-shrink: 0;
+    }
+
+    .quiz-status-ready {
+        background: #d1e7dd;
+        color: #0f5132;
+    }
+
+    .quiz-status-draft {
+        background: #fff3cd;
+        color: #664d03;
+    }
+
+    .btn-action-view {
+        background: #0d6efd;
+        border-color: #0d6efd;
+        color: #fff;
+    }
+
+    .btn-action-edit {
+        background: #ffc107;
+        border-color: #ffc107;
+        color: #212529;
+    }
+
+    .btn-action-delete {
+        background: #dc3545;
+        border-color: #dc3545;
+        color: #fff;
+    }
+
+    .locked-panel {
+        background: #f8f9fa;
+        border-radius: 14px;
+        border: 1px dashed #ced4da;
+    }
+</style>
+
+<!-- Hero -->
+<div class="course-hero py-5 text-white">
     <div class="container">
-        <div class="row align-items-center">
+        <div class="row align-items-center g-4">
             <div class="col-md-8">
                 <h1 class="display-5 fw-bold mb-3">{{ course.title }}</h1>
-                <p class="lead opacity-75 mb-4">{{ course.description }}</p>
-                <div class="d-flex gap-4">
+                <p class="lead opacity-75 mb-4">{{ course.description|truncatewords:40 }}</p>
+                <div class="d-flex flex-wrap gap-4 small">
                     <span><i class="fas fa-user-tie me-2"></i>{{ course.instructor.name }}</span>
-                    <span><i class="fas fa-calendar-alt me-2"></i>{{ course.duration }}</span>
-                    <span><i class="fas fa-check-circle me-2"></i>Certificate Included</span>
+                    <span><i class="fas fa-clock me-2"></i>{{ course.duration }}</span>
+                    <span><i class="fas fa-certificate me-2"></i>Certificate included</span>
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="card border-0 shadow-lg text-dark p-2">
-                    <img src="{{ course.thumbnail.url }}" class="rounded card-img-top mb-3">
-                    <div class="card-body text-center">
+                <div class="card border-0 shadow-lg text-dark rounded-4 overflow-hidden">
+                    <img src="{{ course.thumbnail.url }}" class="card-img-top" alt="{{ course.title }}" style="height: 160px; object-fit: cover;">
+                    <div class="card-body text-center p-4">
                         <h2 class="fw-bold mb-3">₹{{ course.price }}</h2>
                         <div class="d-grid gap-2">
-
                             {% if user.is_authenticated %}
-
-                            {% if user.institute %}
-                            <a href="{% url 'course_edit' course.pk %}" class="btn btn-light border py-2">
-                                Edit Course
-                            </a>
-
-                            <a href="{% url 'course_delete' course.pk %}" class="btn btn-danger py-2">
-                                Delete
-                            </a>
-
+                                {% if is_institute_user %}
+                                <a href="{% url 'course_edit' course.pk %}" class="btn btn-light border">Edit course</a>
+                                <a href="{% url 'course_delete' course.pk %}" class="btn btn-danger">Delete course</a>
+                                {% elif is_instructor_user %}
+                                <a href="{% url 'instructor_dashboard' %}" class="btn btn-outline-primary">Instructor portal</a>
+                                {% elif is_student_user %}
+                                    {% if is_enrolled %}
+                                    <button class="btn btn-success" disabled><i class="fas fa-check me-1"></i> Enrolled</button>
+                                    {% else %}
+                                    <a href="{% url 'courses_enroll' course.pk %}" class="btn btn-primary">Enroll now</a>
+                                    {% endif %}
+                                {% endif %}
                             {% else %}
-
-                            {% if is_enrolled %}
-                            <button class="btn btn-success" disabled>
-                                Already Enrolled
-                            </button>
-                            {% else %}
-                            <a href="{% url 'courses_enroll' course.pk %}" class="btn btn-primary">
-                                Enroll Now
-                            </a>
+                            <a href="{% url 'login' %}" class="btn btn-primary">Login to enroll</a>
                             {% endif %}
-
-                            {% endif %}
-
-                            {% else %}
-
-                            <a href="{% url 'login' %}" class="btn btn-primary">
-                                Login to Enroll
-                            </a>
-
-                            {% endif %}
-
                         </div>
                     </div>
                 </div>
@@ -64,325 +168,268 @@
 <div class="container my-5">
 
     <!-- Tabs -->
-    <ul class="nav nav-pills mb-4 gap-2" id="courseTabs" role="tablist">
-
-        <!-- Details Tab -->
+    <ul class="nav nav-pills course-tabs mb-4 flex-wrap" id="courseTabs" role="tablist">
         <li class="nav-item" role="presentation">
-
-            <button class="nav-link active px-4"
-                    id="details-tab"
-                    data-bs-toggle="pill"
-                    data-bs-target="#details"
-                    type="button">
-
-                <i class="fas fa-info-circle me-2"></i>
-                Details
-
+            <button class="nav-link active" id="details-tab" data-bs-toggle="pill" data-bs-target="#details" type="button" role="tab">
+                <i class="fas fa-info-circle me-2"></i>Details
             </button>
-
         </li>
-
-        <!-- Notes Tab -->
         <li class="nav-item" role="presentation">
-
-            <button class="nav-link px-4"
-                    id="notes-tab"
-                    data-bs-toggle="pill"
-                    data-bs-target="#notes"
-                    type="button">
-
-                <i class="fas fa-book me-2"></i>
-                Notes
-
+            <button class="nav-link" id="notes-tab" data-bs-toggle="pill" data-bs-target="#notes" type="button" role="tab">
+                <i class="fas fa-book me-2"></i>Notes
+                {% if notes %}<span class="badge bg-light text-primary ms-1">{{ notes|length }}</span>{% endif %}
             </button>
-
         </li>
-
-        <!-- Quiz Tab -->
         <li class="nav-item" role="presentation">
-
-            <button class="nav-link px-4"
-                    id="quiz-tab"
-                    data-bs-toggle="pill"
-                    data-bs-target="#quiz"
-                    type="button">
-
-                <i class="fas fa-question-circle me-2"></i>
-                Quiz
-
+            <button class="nav-link" id="quiz-tab" data-bs-toggle="pill" data-bs-target="#quiz" type="button" role="tab">
+                <i class="fas fa-question-circle me-2"></i>Quiz
+                {% if quizzes %}<span class="badge bg-light text-primary ms-1">{{ quizzes|length }}</span>{% endif %}
             </button>
-
         </li>
-
     </ul>
 
+    <div class="tab-content" id="courseTabContent">
 
-    <!-- Tab Content -->
-    <div class="tab-content">
-
-        <!-- ================= DETAILS TAB ================= -->
-        <div class="tab-pane fade show active"
-             id="details"
-             role="tabpanel">
-
-            <div class="row">
-
-                <div class="col-md-8">
-
-                    <h4 class="fw-bold mb-4"
-                        style="color: #0a2647;">
-
-                        What You'll Learn
-
-                    </h4>
-
-                    <div class="bg-light p-4 rounded-4 mb-5 border-start border-primary border-4">
-
-                        <p style="white-space: pre-line;">
-                            {{ course.what_you_will_learn }}
-                        </p>
-
-                    </div>
-
-                    <h4 class="fw-bold mb-4"
-                        style="color: #0a2647;">
-
-                        Curriculum
-
-                    </h4>
-
-                    <div class="mb-5">
-
-                        <p class="p-3 border rounded shadow-sm bg-white"
-                           style="white-space: pre-line;">
-
-                            {{ course.curriculum }}
-
-                        </p>
-
-                    </div>
-
-                </div>
-
-                <div class="col-md-4">
-
-                    <div class="p-4 rounded-4 bg-white shadow-sm mb-4">
-
-                        <h5 class="fw-bold mb-3">
-                            Requirements
-                        </h5>
-
-                        <p class="small text-muted">
-                            {{ course.requirements|default:"No prerequisites" }}
-                        </p>
-
-                    </div>
-
-                    <div class="p-4 rounded-4 bg-white shadow-sm">
-
-                        <h5 class="fw-bold mb-3">
-                            Target Audience
-                        </h5>
-
-                        <p class="small text-muted">
-                            {{ course.target_audience }}
-                        </p>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-
-        <!-- ================= NOTES TAB ================= -->
-        <div class="tab-pane fade"
-             id="notes"
-             role="tabpanel">
-
-            <!-- Notes Header -->
-            <div class="d-flex justify-content-between align-items-center mb-4 p-3 bg-white rounded-4 shadow-sm border">
-
-                <div>
-
-                    <h5 class="fw-bold mb-1"
-                        style="color: #0a2647;">
-
-                        <i class="fas fa-sticky-note me-2 text-primary"></i>
-                        Course Notes
-
-                    </h5>
-
-                    <p class="text-muted small mb-0">
-                        Add and manage notes related to this course.
-                    </p>
-
-                </div>
-
-                <div class="d-flex gap-2">
-
-                    <!-- Add Note -->
-                    <a href="{% url 'add_note' course.pk %}"
-                       class="btn btn-outline-primary px-4">
-
-                        <i class="fas fa-book-open me-2"></i>
-                        Add Notes
-
-                    </a>
-
-                </div>
-
-            </div>
-
-
-            <!-- Notes List -->
-            {% if notes %}
-
+        <!-- DETAILS -->
+        <div class="tab-pane fade show active" id="details" role="tabpanel">
             <div class="row g-4">
-
-                {% for note in notes %}
-
-                <div class="col-md-6">
-
-                    <div class="card border-0 shadow-sm rounded-4 h-100">
-
-                        <div class="card-body">
-
-                            <h5 class="fw-bold mb-3">
-                                {{ note.title }}
-                            </h5>
-
-                            <p class="text-muted small mb-4">
-                                {{ note.description }}
-                            </p>
-
-                            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-
-                                <small class="text-secondary">
-                                    {{ note.created_at|date:"d M Y" }}
-                                </small>
-
-                                <div class="d-flex gap-2">
-
-                                    <!-- View -->
-                                    <a href="{{ note.file.url }}"
-                                       class="btn btn-primary btn-sm"
-                                       target="_blank">
-
-                                        <i class="fas fa-eye me-1"></i>
-                                        View
-
-                                    </a>
-
-                                    {% if user.is_authenticated %}
-
-                                        {% if user.institute or user.instructor %}
-
-                                        <!-- Edit -->
-                                        <a href="{% url 'edit_note' course.pk note.pk %}"
-                                           class="btn btn-warning btn-sm text-white">
-
-                                            <i class="fas fa-edit me-1"></i>
-                                            Edit
-
-                                        </a>
-
-                                        <!-- Delete -->
-                                        <a href=""
-                                           class="btn btn-danger btn-sm">
-
-                                            <i class="fas fa-trash me-1"></i>
-                                            Delete
-
-                                        </a>
-
-                                        {% endif %}
-
-                                    {% endif %}
-
-                                </div>
-
-                            </div>
-
+                <div class="col-lg-8">
+                    <div class="tab-panel-card p-4 mb-4">
+                        <h4 class="fw-bold mb-3" style="color: #0a2647;">What you'll learn</h4>
+                        <div class="bg-light p-4 rounded-3 border-start border-primary border-4">
+                            <p class="mb-0" style="white-space: pre-line;">{{ course.what_you_will_learn }}</p>
                         </div>
-
                     </div>
-
+                    <div class="tab-panel-card p-4">
+                        <h4 class="fw-bold mb-3" style="color: #0a2647;">Curriculum</h4>
+                        <p class="mb-0 p-3 border rounded-3 bg-white" style="white-space: pre-line;">{{ course.curriculum }}</p>
+                    </div>
                 </div>
-
-                {% endfor %}
-
+                <div class="col-lg-4">
+                    <div class="tab-panel-card p-4 mb-4">
+                        <h5 class="fw-bold mb-3">Requirements</h5>
+                        <p class="small text-muted mb-0">{{ course.requirements|default:"No prerequisites required." }}</p>
+                    </div>
+                    <div class="tab-panel-card p-4">
+                        <h5 class="fw-bold mb-3">Target audience</h5>
+                        <p class="small text-muted mb-0">{{ course.target_audience|default:"Anyone interested in this subject." }}</p>
+                    </div>
+                </div>
             </div>
-
-            {% else %}
-
-            <div class="alert alert-light border rounded-4">
-
-                No notes uploaded yet.
-
-            </div>
-
-            {% endif %}
-
         </div>
 
-
-
-        <!-- ================= QUIZ TAB ================= -->
-        <div class="tab-pane fade"
-             id="quiz"
-             role="tabpanel">
-
-            <div class="d-flex justify-content-between align-items-center mb-4 p-3 bg-white rounded-4 shadow-sm border">
-
-                <div>
-
-                    <h5 class="fw-bold mb-1"
-                        style="color: #0a2647;">
-
-                        <i class="fas fa-question-circle me-2 text-primary"></i>
-                        Course Quiz
-
-                    </h5>
-
-                    <p class="text-muted small mb-0">
-                        Add and manage quizzes for this course.
-                    </p>
-
+        <!-- NOTES -->
+        <div class="tab-pane fade" id="notes" role="tabpanel">
+            <div class="tab-panel-card">
+                <div class="tab-panel-header d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                    <div>
+                        <h5 class="fw-bold mb-1" style="color: #0a2647;">
+                            <i class="fas fa-sticky-note text-primary me-2"></i>Course notes
+                        </h5>
+                        <p class="text-muted small mb-0">Study materials and downloadable resources</p>
+                    </div>
+                    {% if can_manage_course %}
+                    <a href="{% url 'add_note' course.pk %}" class="btn btn-primary rounded-pill px-4">
+                        <i class="fas fa-plus me-1"></i> Add note
+                    </a>
+                    {% endif %}
                 </div>
 
-                {% if user.is_authenticated %}
+                <div class="tab-panel-body">
+                    {% if is_institute_user or is_instructor_user or is_enrolled %}
 
-                    {% if user.institute or user.instructor %}
+                        {% if notes %}
+                        <div class="row g-4">
+                            {% for note in notes %}
+                            <div class="col-md-6">
+                                <div class="note-card card h-100">
+                                    <div class="card-body p-4 d-flex flex-column">
+                                        <div class="d-flex gap-3 mb-3">
+                                            <div class="note-file-icon">
+                                                <i class="fas fa-file-alt"></i>
+                                            </div>
+                                            <div class="flex-grow-1 min-w-0">
+                                                <h6 class="fw-bold mb-1 text-truncate">{{ note.title }}</h6>
+                                                <p class="text-muted small mb-0">
+                                                    {{ note.description|default:"No description"|truncatewords:20 }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center mt-auto pt-3 border-top">
+                                            <small class="text-secondary">
+                                                <i class="far fa-calendar me-1"></i>{{ note.created_at|date:"d M Y" }}
+                                            </small>
+                                            <div class="d-flex gap-2 flex-wrap justify-content-end">
+                                                <a href="{{ note.file.url }}"
+                                                   class="btn btn-sm btn-action-view rounded-pill px-3"
+                                                   target="_blank"
+                                                   rel="noopener"
+                                                   download>
+                                                    <i class="fas fa-download me-1"></i>Download
+                                                </a>
+                                                {% if can_manage_course %}
+                                                <a href="{% url 'edit_note' course.pk note.pk %}"
+                                                   class="btn btn-sm btn-action-edit rounded-pill px-3">
+                                                    <i class="fas fa-pen me-1"></i>Edit
+                                                </a>
+                                                <a href="{% url 'delete_note' course.pk note.pk %}"
+                                                   class="btn btn-sm btn-action-delete rounded-pill px-3">
+                                                    <i class="fas fa-trash me-1"></i>Delete
+                                                </a>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <div class="py-2">
+                            {% include 'main/partials/empty_state.html' with icon='fa-sticky-note' title='No notes uploaded yet' description='Upload PDFs, slides, or documents for students to download.' %}
+                            {% if can_manage_course %}
+                            <div class="text-center mt-3">
+                                <a href="{% url 'add_note' course.pk %}" class="btn btn-primary rounded-pill px-4">Upload first note</a>
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endif %}
 
-                    <a href="{% url 'add_quiz' course.pk %}"
-                       class="btn btn-primary px-4">
-
-                        <i class="fas fa-plus me-2"></i>
-                        Add Quiz
-
-                    </a>
-
+                    {% elif user.is_authenticated and is_student_user %}
+                    <div class="locked-panel text-center p-5">
+                        <i class="fas fa-lock fa-2x text-muted mb-3"></i>
+                        <h5 class="fw-bold">Notes are for enrolled students</h5>
+                        <p class="text-muted mb-4">Enroll in this course to access study materials.</p>
+                        <a href="{% url 'courses_enroll' course.pk %}" class="btn btn-primary rounded-pill px-4">Enroll now</a>
+                    </div>
+                    {% else %}
+                    <div class="locked-panel text-center p-5">
+                        <i class="fas fa-sign-in-alt fa-2x text-muted mb-3"></i>
+                        <h5 class="fw-bold">Sign in to view notes</h5>
+                        <p class="text-muted mb-4">Login and enroll to download course materials.</p>
+                        <a href="{% url 'login' %}" class="btn btn-primary rounded-pill px-4">Login</a>
+                    </div>
                     {% endif %}
-
-                {% endif %}
-
+                </div>
             </div>
+        </div>
 
-            <div class="alert alert-light border rounded-4">
+        <!-- QUIZ -->
+        <div class="tab-pane fade" id="quiz" role="tabpanel">
+            <div class="tab-panel-card">
+                <div class="tab-panel-header d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                    <div>
+                        <h5 class="fw-bold mb-1" style="color: #0a2647;">
+                            <i class="fas fa-clipboard-check text-primary me-2"></i>Course quizzes
+                        </h5>
+                        <p class="text-muted small mb-0">Practice assessments for this course</p>
+                    </div>
+                    {% if can_manage_course %}
+                    <a href="{% url 'add_quiz' course.pk %}" class="btn btn-primary rounded-pill px-4">
+                        <i class="fas fa-plus me-1"></i> Create quiz
+                    </a>
+                    {% endif %}
+                </div>
 
-                No quizzes added yet.
+                <div class="tab-panel-body">
+                    {% if is_institute_user or is_instructor_user or is_enrolled %}
 
+                        {% if quizzes %}
+                        <div class="row g-4">
+                            {% for quiz in quizzes %}
+                            <div class="col-md-6 col-lg-4">
+                                <div class="quiz-card card h-100">
+                                    <div class="card-body p-4 d-flex flex-column">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <h6 class="fw-bold mb-0">{{ quiz.title }}</h6>
+                                            {% if quiz.questions.count %}
+                                            <span class="badge quiz-status-ready rounded-pill">Ready</span>
+                                            {% else %}
+                                            <span class="badge quiz-status-draft rounded-pill">Draft</span>
+                                            {% endif %}
+                                        </div>
+                                        <p class="text-muted small mb-3">
+                                            <i class="fas fa-list-ol me-1"></i>
+                                            {{ quiz.questions.count }} question{{ quiz.questions.count|pluralize }}
+                                        </p>
+                                        <div class="d-flex flex-wrap gap-2 mt-auto">
+                                            <a href="{% url 'view_quiz' quiz.pk %}" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                                                <i class="fas fa-eye me-1"></i>View
+                                            </a>
+                                            {% if can_manage_course %}
+                                            <a href="{% url 'add_question' quiz.pk %}" class="btn btn-sm btn-primary rounded-pill px-3">
+                                                <i class="fas fa-pen me-1"></i>Manage
+                                            </a>
+                                            {% elif is_student_user and quiz.questions.count %}
+                                            <a href="{% url 'view_quiz' quiz.pk %}" class="btn btn-sm btn-success rounded-pill px-3">
+                                                <i class="fas fa-play me-1"></i>Start
+                                            </a>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <div class="py-2">
+                            {% include 'main/partials/empty_state.html' with icon='fa-question-circle' title='No quizzes yet' description='Create a quiz and add questions to assess student learning.' %}
+                            {% if can_manage_course %}
+                            <div class="text-center mt-3">
+                                <a href="{% url 'add_quiz' course.pk %}" class="btn btn-primary rounded-pill px-4">Create first quiz</a>
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+
+                    {% elif user.is_authenticated and is_student_user %}
+                    <div class="locked-panel text-center p-5">
+                        <i class="fas fa-lock fa-2x text-muted mb-3"></i>
+                        <h5 class="fw-bold">Quizzes unlock after enrollment</h5>
+                        <p class="text-muted mb-4">Enroll to take course quizzes.</p>
+                        <a href="{% url 'courses_enroll' course.pk %}" class="btn btn-primary rounded-pill px-4">Enroll now</a>
+                    </div>
+                    {% else %}
+                    <div class="locked-panel text-center p-5">
+                        <i class="fas fa-sign-in-alt fa-2x text-muted mb-3"></i>
+                        <h5 class="fw-bold">Sign in to access quizzes</h5>
+                        <a href="{% url 'login' %}" class="btn btn-primary rounded-pill px-4 mt-3">Login</a>
+                    </div>
+                    {% endif %}
+                </div>
             </div>
-
         </div>
 
     </div>
-
 </div>
-```
+
+<script>
+(function () {
+    function openTabFromUrl() {
+        const params = new URLSearchParams(window.location.search);
+        let tabId = params.get('tab');
+        if (!tabId && window.location.hash) {
+            tabId = window.location.hash.replace('#', '');
+        }
+        if (!tabId) return;
+
+        const trigger = document.getElementById(tabId + '-tab');
+        if (trigger && window.bootstrap) {
+            bootstrap.Tab.getOrCreateInstance(trigger).show();
+        }
+    }
+
+    document.querySelectorAll('#courseTabs button[data-bs-toggle="pill"]').forEach(function (btn) {
+        btn.addEventListener('shown.bs.tab', function () {
+            const id = btn.getAttribute('data-bs-target').replace('#', '');
+            const url = new URL(window.location);
+            url.searchParams.set('tab', id);
+            history.replaceState(null, '', url);
+        });
+    });
+
+    openTabFromUrl();
+})();
+</script>
 
 {% endblock %}

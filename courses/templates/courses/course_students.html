@@ -1,122 +1,45 @@
 {% extends 'main/base.html' %}
 
+{% block title %}Students | {{ course.title }}{% endblock %}
+
 {% block content %}
 
-<style>
-    body {
-        background: #f4f7fc;
-    }
-
-    .student-card {
-        border: none;
-        border-radius: 18px;
-        transition: 0.3s;
-    }
-
-    .student-card:hover {
-        transform: translateY(-4px);
-    }
-</style>
-
-<div class="container py-5">
-
-    <!-- Header -->
-
-    <div class="d-flex justify-content-between align-items-center mb-4">
-
+<section class="page-hero mb-4" data-il-animate>
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
         <div>
-
-            <h2 class="fw-bold mb-1">
-                {{ course.title }}
-            </h2>
-
-            <p class="text-muted mb-0">
-                Enrolled Students
-            </p>
-
+            <span class="badge badge-il-soft mb-2 px-3 py-2 rounded-pill">{{ course.title }}</span>
+            <h1 class="page-hero-title mb-1">Enrolled students</h1>
+            <p class="text-muted mb-0">{{ total_students }} student{{ total_students|pluralize }} total</p>
         </div>
-
-        <span class="badge bg-primary px-4 py-2 rounded-pill">
-
-            {{ enrollments.count }} Students
-
-        </span>
-
+        <a href="{% url 'course_detail' course.pk %}" class="btn btn-outline-primary rounded-pill">Back to course</a>
     </div>
+</section>
 
-    <div class="row g-4">
+{% include 'main/partials/list_toolbar.html' %}
 
-        {% for enrollment in enrollments %}
+{% if has_filters and not page_obj.object_list %}
+<div class="alert alert-info mb-4">No students match "<strong>{{ q }}</strong>".</div>
+{% endif %}
 
-        <div class="col-lg-4 col-md-6">
-
-            <div class="card student-card shadow-sm h-100">
-
-                <div class="card-body p-4 text-center">
-
-                    <img src="https://ui-avatars.com/api/?name={{ enrollment.student.username }}&background=0D6EFD&color=fff&size=80"
-                         class="rounded-circle mb-3">
-
-                    <h5 class="fw-bold mb-1">
-
-                        {{ enrollment.student.username }}
-
-                    </h5>
-
-                    <p class="text-muted small mb-3">
-
-                        {{ enrollment.student.email }}
-
-                    </p>
-
-                    <div class="border-top pt-3">
-
-                        <small class="text-muted d-block mb-2">
-
-                            Enrolled On
-
-                        </small>
-
-                        <span class="fw-semibold">
-
-                            {{ enrollment.enrolled_at|date:"d M Y" }}
-
-                        </span>
-
-                    </div>
-
-                </div>
-
-            </div>
-
+{% if page_obj.object_list %}
+<div class="row g-4">
+    {% for enrollment in page_obj %}
+    <div class="col-lg-4 col-md-6" data-il-animate>
+        <div class="card card-il text-center p-4 h-100">
+            <img src="https://ui-avatars.com/api/?name={{ enrollment.student.username }}&background=0D6EFD&color=fff&size=72"
+                 class="rounded-circle mb-3 mx-auto" alt="">
+            <h6 class="fw-bold mb-1">{{ enrollment.student.username }}</h6>
+            <p class="text-muted small mb-2">{{ enrollment.student.email }}</p>
+            <small class="text-secondary">Enrolled {{ enrollment.enrolled_at|date:"d M Y" }}</small>
         </div>
-
-        {% empty %}
-
-        <div class="col-12">
-
-            <div class="card border-0 shadow-sm rounded-4 p-5 text-center">
-
-                <h4 class="fw-bold mb-3">
-
-                    No Students Enrolled Yet
-
-                </h4>
-
-                <p class="text-muted">
-
-                    Students who enroll in this course will appear here.
-
-                </p>
-
-            </div>
-
-        </div>
-
-        {% endfor %}
-
     </div>
-
+    {% endfor %}
 </div>
+{% include 'main/partials/pagination.html' %}
+{% else %}
+{% if not has_filters %}
+<div class="shadow-sm">{% include 'main/partials/empty_state.html' with icon='fa-user-graduate' title='No students yet' description='Students who enroll will appear here.' %}</div>
+{% endif %}
+{% endif %}
 
 {% endblock %}

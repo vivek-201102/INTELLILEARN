@@ -1,0 +1,64 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Contact Messages | IntelliLearn{% endblock %}
+
+{% block content %}
+
+{% include 'main/partials/page_hero.html' with hero_badge='Inbox' hero_title='Contact Messages' hero_subtitle='Review and search inquiries from the contact form.' %}
+
+<div class="row g-3 mb-4 il-animate">
+    <div class="col-md-4">
+        <div class="card card-il p-3">
+            <div class="text-muted small text-uppercase fw-semibold">Total messages</div>
+            <div class="stat-number-il fs-3">{{ total_messages }}</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card card-il p-3">
+            <div class="text-muted small text-uppercase fw-semibold">Showing</div>
+            <div class="fs-4 fw-bold">{{ page_obj.paginator.count }}</div>
+        </div>
+    </div>
+</div>
+
+{% include 'main/partials/list_toolbar.html' %}
+
+{% if has_filters and not page_obj.object_list %}
+<div class="alert alert-info mb-4">No messages match "<strong>{{ q }}</strong>".</div>
+{% endif %}
+
+{% if page_obj.object_list %}
+<div class="card card-il overflow-hidden">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th class="ps-4">Sender</th>
+                    <th>Email</th>
+                    <th>Subject</th>
+                    <th>Message</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for msg in page_obj %}
+                <tr class="il-animate-fade">
+                    <td class="ps-4 fw-semibold">{{ msg.full_name }}</td>
+                    <td><a href="mailto:{{ msg.email }}" class="text-decoration-none">{{ msg.email }}</a></td>
+                    <td><span class="badge bg-light text-dark border">{{ msg.subject }}</span></td>
+                    <td class="text-muted small">{{ msg.message|truncatechars:60 }}</td>
+                    <td class="text-secondary small">{{ msg.created_at|date:"M d, Y" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% include 'main/partials/pagination.html' %}
+{% else %}
+{% if not has_filters %}
+<div class="shadow-sm">{% include 'main/partials/empty_state.html' with icon='fa-inbox' title='No messages yet' description='Contact form submissions will appear here.' %}</div>
+{% endif %}
+{% endif %}
+
+{% endblock %}

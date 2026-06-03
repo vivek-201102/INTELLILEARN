@@ -1,151 +1,138 @@
 {% extends 'main/base.html' %}
 {% load static %}
 
-{% block title %}Contact Us | IntelliLearn Support{% endblock %}
+{% block title %}Contact Us | IntelliLearn{% endblock %}
 
 {% block content %}
-<style>
-    .contact-wrapper {
-        padding: 60px 0;
-    }
-    .info-card {
-        border: none;
-        border-radius: 15px;
-        padding: 30px;
-        background: #ffffff;
-        transition: transform 0.3s ease;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-        height: 100%;
-    }
-    .info-card:hover {
-        transform: translateY(-5px);
-    }
-    .icon-circle {
-        width: 50px;
-        height: 50px;
-        background: #e7f1ff;
-        color: #0d6efd;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.2rem;
-        margin-bottom: 20px;
-    }
-    .form-control {
-        padding: 12px 15px;
-        border-radius: 10px;
-        border: 1px solid #dee2e6;
-    }
-    .form-control:focus {
-        box-shadow: 0 0 0 0.25 margin rgba(13, 110, 253, 0.1);
-        border-color: #0d6efd;
-    }
-    .map-container {
-        border-radius: 15px;
-        overflow: hidden;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-        height: 400px;
-        background: #e9ecef;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-</style>
 
-<div class="container contact-wrapper">
-    <!-- Header Section -->
-    <div class="text-center mb-5">
-        <h1 class="fw-bold">Get in <span class="text-primary">Touch</span></h1>
-        <p class="text-muted">Have questions about our smart proctoring or course enrollment? We're here to help.</p>
-    </div>
-
-    <div class="row g-4 mb-5">
-        <!-- Contact Methods -->
-        <div class="col-md-4">
-            <div class="info-card">
-                <div class="icon-circle">
-                    <i class="fas fa-envelope"></i>
+<!-- Hero — matches home page -->
+<section class="page-hero mt-2 mb-5" data-il-animate>
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <span class="badge badge-il-soft mb-3 px-3 py-2 rounded-pill">We're here to help</span>
+                <h1 class="page-hero-title mb-4">Get in <span class="text-gradient-il">Touch</span></h1>
+                <p class="lead text-muted mb-4">Questions about courses, exams, or partnerships? Our team typically responds within 24 hours.</p>
+                <div class="d-flex flex-wrap gap-3">
+                    <a href="{% url 'faq' %}" class="btn btn-outline-dark btn-lg px-4"><i class="fas fa-question-circle me-2"></i>View FAQ</a>
+                    <a href="{% url 'course_list' %}" class="btn btn-primary btn-lg px-4 shadow">Explore Courses</a>
                 </div>
-                <h5>Email Us</h5>
-                <p class="text-muted">Our support team usually responds within 24 hours.</p>
-                <a href="mailto:support@intellilearn.com" class="text-decoration-none fw-bold">support@intellilearn.com</a>
             </div>
-        </div>
-        <div class="col-md-4">
-            <div class="info-card">
-                <div class="icon-circle" style="background: #e8f5e9; color: #2e7d32;">
-                    <i class="fas fa-phone-alt"></i>
-                </div>
-                <h5>Call Us</h5>
-                <p class="text-muted">Mon-Fri from 9am to 6pm for urgent queries.</p>
-                <a href="tel:+1234567890" class="text-decoration-none fw-bold">+1 (234) 567-890</a>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="info-card">
-                <div class="icon-circle" style="background: #fff4e5; color: #ef6c00;">
-                    <i class="fas fa-map-marker-alt"></i>
-                </div>
-                <h5>Our Office</h5>
-                <p class="text-muted">123 Tech Park, Innovation Way<br>Silicon Valley, CA 94043</p>
+            <div class="col-lg-6 d-none d-lg-block il-animate il-delay-2">
+                <img src="https://img.freepik.com/free-vector/contact-us-concept-illustration_114360-2299.jpg"
+                     alt="Contact support" class="img-fluid rounded-4 shadow" style="max-height: 320px; object-fit: cover; width: 100%;">
             </div>
         </div>
     </div>
+</section>
 
-    <div class="row g-5">
-        <!-- Contact Form -->
-        <div class="col-lg-6">
-            <div class="bg-white p-4 p-md-5 rounded-4 shadow-sm">
-                <h3 class="mb-4 fw-bold">Send a Message</h3>
-                <form method="POST">
-                    {% csrf_token %}
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label fw-semibold">Full Name</label>
-                            <input type="text" class="form-control" placeholder="John Doe" required>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label fw-semibold">Email Address</label>
-                            <input type="email" class="form-control" placeholder="john@example.com" required>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Subject</label>
-                        <select class="form-select form-control">
-                            <option>Technical Support</option>
-                            <option>Course Inquiry</option>
-                            <option>Payment Issue</option>
-                            <option>Other</option>
-                        </select>
-                    </div>
-                    <div class="mb-4">
-                        <label class="form-label fw-semibold">Message</label>
-                        <textarea class="form-control" rows="5" placeholder="How can we help you?" required></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary btn-lg w-100 shadow-sm">Send Message</button>
-                </form>
-            </div>
+<!-- Stats row — like home -->
+<div class="row text-center mb-5 g-4" data-il-animate>
+    <div class="col-6 col-md-3">
+        <div class="stat-number-il">24h</div>
+        <p class="text-muted small mb-0">Avg. response time</p>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-number-il">7</div>
+        <p class="text-muted small mb-0">Days support</p>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-number-il">100%</div>
+        <p class="text-muted small mb-0">Dedicated team</p>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-number-il">FAQ</div>
+        <p class="text-muted small mb-0"><a href="{% url 'faq' %}">Instant answers</a></p>
+    </div>
+</div>
+
+<!-- Contact cards — home feature style -->
+<div class="row g-4 mb-5">
+    <div class="col-md-4" data-il-animate>
+        <div class="card h-100 feature-card-il p-4">
+            <div class="icon-box-il mb-3"><i class="fas fa-envelope"></i></div>
+            <h5 class="fw-bold">Email us</h5>
+            <p class="text-muted small">Technical, billing, or course questions.</p>
+            <a href="mailto:support@intellilearn.com" class="fw-semibold text-decoration-none">support@intellilearn.com</a>
         </div>
+    </div>
+    <div class="col-md-4" data-il-animate>
+        <div class="card h-100 feature-card-il p-4">
+            <div class="icon-box-il mb-3" style="background:#fff4e5;color:#ff9800;"><i class="fas fa-phone-alt"></i></div>
+            <h5 class="fw-bold">Call us</h5>
+            <p class="text-muted small">Mon–Fri, 9am–6pm IST.</p>
+            <a href="tel:+911234567890" class="fw-semibold text-decoration-none">+91 123 456 7890</a>
+        </div>
+    </div>
+    <div class="col-md-4" data-il-animate>
+        <div class="card h-100 feature-card-il p-4">
+            <div class="icon-box-il mb-3" style="background:#e8f5e9;color:#4caf50;"><i class="fas fa-handshake"></i></div>
+            <h5 class="fw-bold">Partnerships</h5>
+            <p class="text-muted small">Institutes & training centers.</p>
+            <a href="{% url 'institute_register' %}" class="fw-semibold text-decoration-none">Partner with us →</a>
+        </div>
+    </div>
+</div>
 
-        <!-- Visual Map/Side Content -->
-        <div class="col-lg-6">
-            <div class="map-container">
-                <!-- You can replace this div with an actual Google Maps iframe -->
-                <div class="text-center p-4">
-                    <i class="fas fa-map-marked-alt fa-3x text-muted mb-3"></i>
-                    <h4>Location Map</h4>
-                    <p class="text-muted small">Interactive map integration would appear here.</p>
+<div class="row g-5 align-items-stretch">
+    <div class="col-lg-7" data-il-animate>
+        <div class="card card-il p-4 p-md-5">
+            <h3 class="fw-bold mb-1">Send a message</h3>
+            <p class="text-muted mb-4">Fill out the form and we'll get back to you soon.</p>
+            <form method="POST">
+                {% csrf_token %}
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Full name</label>
+                        <input type="text" name="full_name" class="form-control rounded-3" placeholder="John Doe" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Email</label>
+                        <input type="email" name="email" class="form-control rounded-3" placeholder="john@example.com" required>
+                    </div>
                 </div>
-            </div>
-            
-            <div class="mt-4 p-4 bg-light rounded-4">
-                <h5 class="fw-bold mb-3">Quick Support FAQ</h5>
-                <p class="small text-muted mb-2"><i class="fas fa-check-circle text-success me-2"></i> Instant password reset available in login.</p>
-                <p class="small text-muted mb-2"><i class="fas fa-check-circle text-success me-2"></i> Certificate verification is automated.</p>
-                <p class="small text-muted"><i class="fas fa-check-circle text-success me-2"></i> 24/7 Server status monitoring.</p>
+                <div class="mt-3">
+                    <label class="form-label fw-semibold">Subject</label>
+                    <select name="subject" class="form-select rounded-3">
+                        <option>Technical Support</option>
+                        <option>Course Inquiry</option>
+                        <option>Payment Issue</option>
+                        <option>Other</option>
+                    </select>
+                </div>
+                <div class="mt-3">
+                    <label class="form-label fw-semibold">Message</label>
+                    <textarea name="message" class="form-control rounded-3" rows="5" placeholder="How can we help?" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary btn-lg w-100 mt-4 rounded-3 shadow-sm">
+                    <i class="fas fa-paper-plane me-2"></i>Send message
+                </button>
+            </form>
+        </div>
+    </div>
+    <div class="col-lg-5" data-il-animate>
+        <div class="card card-il p-4 h-100">
+            <h5 class="fw-bold mb-3"><i class="fas fa-bolt text-primary me-2"></i>Quick help</h5>
+            <ul class="list-unstyled mb-4">
+                <li class="mb-3 d-flex"><i class="fas fa-check-circle text-success me-2 mt-1"></i><span class="small text-muted">Reset password from the <a href="{% url 'login' %}">login page</a>.</span></li>
+                <li class="mb-3 d-flex"><i class="fas fa-check-circle text-success me-2 mt-1"></i><span class="small text-muted">Browse <a href="{% url 'course_list' %}">courses</a> and enroll instantly.</span></li>
+                <li class="mb-3 d-flex"><i class="fas fa-check-circle text-success me-2 mt-1"></i><span class="small text-muted">Read our <a href="{% url 'faq' %}">FAQ</a> for common answers.</span></li>
+            </ul>
+            <div class="p-4 rounded-4 bg-light">
+                <h6 class="fw-bold mb-2">Office</h6>
+                <p class="small text-muted mb-0"><i class="fas fa-map-marker-alt text-primary me-2"></i>123 Tech Park, Innovation Way<br>India</p>
             </div>
         </div>
     </div>
 </div>
+
+<!-- CTA — same as home -->
+<section class="cta-section-il mt-5 py-5 text-center text-white" data-il-animate>
+    <div class="container">
+        <h2 class="fw-bold mb-3">Ready to start learning?</h2>
+        <p class="mb-4 opacity-75">Join thousands of students on IntelliLearn.</p>
+        <a href="{% url 'registration' %}" class="btn btn-light btn-lg px-5 fw-semibold">Create free account</a>
+    </div>
+</section>
+
 {% endblock %}
