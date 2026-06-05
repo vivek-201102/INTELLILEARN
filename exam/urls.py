@@ -52,4 +52,9 @@ path(
     name='delete_question'
 ),
 
+path('quiz/<int:quiz_pk>/take/', views.take_quiz, name='take_quiz'),
+    
+   
+path('quiz/review/<int:attempt_id>/', views.quiz_review_view, name='quiz_review'),
+
 ]

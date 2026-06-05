@@ -1,10 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-
 from courses.models import Course
 from courses.permissions import user_can_manage_course, course_manage_denied_response
 from .models import Question, Quiz
+from .models import Quiz, Question, QuizAttempt
+import json
+
 
 
 def _deny_quiz_manage(request, quiz):
@@ -312,3 +314,78 @@ def delete_quiz(request, pk):
             'quiz': quiz
         }
     )
+
+
+
+@login_required
+def take_quiz(request, quiz_pk):
+    quiz = get_object_or_404(Quiz, pk=quiz_pk)
+    questions = quiz.questions.all()
+
+    if request.method == "POST":
+        score = 0
+        total = questions.count()
+        saved_answers = {}
+
+        for question in questions:
+            selected_answer = request.POST.get(f"question_{question.id}")
+            saved_answers[str(question.id)] = selected_answer
+
+            if selected_answer == question.correct_answer:
+                score += 1
+
+        # Save the attempt to the database so it can be reviewed later!
+        attempt = QuizAttempt.objects.create(
+            student=request.user,
+            quiz=quiz,
+            score=score,
+            total_questions=total,
+            user_answers=saved_answers
+        )
+
+        # Render the results page directly, passing the new attempt row
+        return render(
+            request,
+            'exam/quiz_result.html',
+            {
+                'quiz': quiz,
+                'score': score,
+                'total': total,
+                'attempt': attempt # This passes the attempt object to your result template!
+            }
+        )
+
+    return render(
+        request,
+        'exam/take_quiz.html',
+        {
+            'quiz': quiz,
+            'questions': questions
+        }
+    )
+
+
+@login_required
+def quiz_review_view(request, attempt_id):
+    attempt = get_object_or_404(QuizAttempt, id=attempt_id, student=request.user)
+    questions = attempt.quiz.questions.all()
+
+    reviewed_questions = []
+    for q in questions:
+        reviewed_questions.append({
+            'id': q.id,
+            'question': q.question,
+            'option1': q.option1,
+            'option2': q.option2,
+            'option3': q.option3,
+            'option4': q.option4,
+            'correct_answer': q.correct_answer,
+            'user_answer': attempt.user_answers.get(str(q.id))
+        })
+
+    context = {
+        'quiz': attempt.quiz,
+        'reviewed_questions': reviewed_questions,
+        'review_mode': True
+    }
+    return render(request, 'exam/take_quiz.html', context)

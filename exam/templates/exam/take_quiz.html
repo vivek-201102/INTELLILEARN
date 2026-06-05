@@ -1,0 +1,120 @@
+{% extends 'main/student_base.html' %}
+
+{% block student_content %}
+<div class="container py-5">
+    
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+        <h2 class="fw-bold text-dark mb-0">{{ quiz.title }}</h2>
+        {% if review_mode %}
+            <span class="badge bg-info fs-6 px-3 py-2 rounded-pill shadow-sm">Review Mode</span>
+        {% endif %}
+    </div>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        {% if review_mode %}
+            {% for question in reviewed_questions %}
+            <div class="card mb-4 shadow-sm border-0 rounded-3">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold text-dark mb-3">Q{{ forloop.counter }}. {{ question.question }}</h5>
+
+                    <div class="d-flex flex-column gap-2 mt-3">
+                        
+                        <div class="form-check p-3 rounded-3 border {% if question.option1 == question.correct_answer %}border-success bg-success-subtle{% elif question.option1 == question.user_answer %}border-danger bg-danger-subtle{% endif %}">
+                            <input class="form-check-input ms-0 me-2" type="radio" name="question_{{ question.id }}" id="q_{{ question.id }}_opt1" value="{{ question.option1 }}" disabled {% if question.option1 == question.user_answer %}checked{% endif %}>
+                            <label class="form-check-label fw-medium w-100" for="q_{{ question.id }}_opt1">
+                                {{ question.option1 }}
+                                {% if question.option1 == question.correct_answer %} 
+                                    <span class="text-success ms-2 fw-bold">✓ Correct Answer</span>
+                                {% elif question.option1 == question.user_answer %} 
+                                    <span class="text-danger ms-2 fw-bold">✗ Your Choice</span> 
+                                {% endif %}
+                            </label>
+                        </div>
+
+                        <div class="form-check p-3 rounded-3 border {% if question.option2 == question.correct_answer %}border-success bg-success-subtle{% elif question.option2 == question.user_answer %}border-danger bg-danger-subtle{% endif %}">
+                            <input class="form-check-input ms-0 me-2" type="radio" name="question_{{ question.id }}" id="q_{{ question.id }}_opt2" value="{{ question.option2 }}" disabled {% if question.option2 == question.user_answer %}checked{% endif %}>
+                            <label class="form-check-label fw-medium w-100" for="q_{{ question.id }}_opt2">
+                                {{ question.option2 }}
+                                {% if question.option2 == question.correct_answer %} 
+                                    <span class="text-success ms-2 fw-bold">✓ Correct Answer</span>
+                                {% elif question.option2 == question.user_answer %} 
+                                    <span class="text-danger ms-2 fw-bold">✗ Your Choice</span> 
+                                {% endif %}
+                            </label>
+                        </div>
+
+                        <div class="form-check p-3 rounded-3 border {% if question.option3 == question.correct_answer %}border-success bg-success-subtle{% elif question.option3 == question.user_answer %}border-danger bg-danger-subtle{% endif %}">
+                            <input class="form-check-input ms-0 me-2" type="radio" name="question_{{ question.id }}" id="q_{{ question.id }}_opt3" value="{{ question.option3 }}" disabled {% if question.option3 == question.user_answer %}checked{% endif %}>
+                            <label class="form-check-label fw-medium w-100" for="q_{{ question.id }}_opt3">
+                                {{ question.option3 }}
+                                {% if question.option3 == question.correct_answer %} 
+                                    <span class="text-success ms-2 fw-bold">✓ Correct Answer</span>
+                                {% elif question.option3 == question.user_answer %} 
+                                    <span class="text-danger ms-2 fw-bold">✗ Your Choice</span> 
+                                {% endif %}
+                            </label>
+                        </div>
+
+                        <div class="form-check p-3 rounded-3 border {% if question.option4 == question.correct_answer %}border-success bg-success-subtle{% elif question.option4 == question.user_answer %}border-danger bg-danger-subtle{% endif %}">
+                            <input class="form-check-input ms-0 me-2" type="radio" name="question_{{ question.id }}" id="q_{{ question.id }}_opt4" value="{{ question.option4 }}" disabled {% if question.option4 == question.user_answer %}checked{% endif %}>
+                            <label class="form-check-label fw-medium w-100" for="q_{{ question.id }}_opt4">
+                                {{ question.option4 }}
+                                {% if question.option4 == question.correct_answer %} 
+                                    <span class="text-success ms-2 fw-bold">✓ Correct Answer</span>
+                                {% elif question.option4 == question.user_answer %} 
+                                    <span class="text-danger ms-2 fw-bold">✗ Your Choice</span> 
+                                {% endif %}
+                            </label>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+
+        {% else %}
+            {% for question in questions %}
+            <div class="card mb-4 shadow-sm border-0 rounded-3">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold text-dark mb-3">Q{{ forloop.counter }}. {{ question.question }}</h5>
+
+                    <div class="d-flex flex-column gap-2 mt-3">
+                        
+                        <div class="form-check p-3 rounded-3 border">
+                            <input class="form-check-input ms-0 me-2" type="radio" name="question_{{ question.id }}" id="live_q_{{ question.id }}_opt1" value="{{ question.option1 }}">
+                            <label class="form-check-label fw-medium w-100" for="live_q_{{ question.id }}_opt1">{{ question.option1 }}</label>
+                        </div>
+
+                        <div class="form-check p-3 rounded-3 border">
+                            <input class="form-check-input ms-0 me-2" type="radio" name="question_{{ question.id }}" id="live_q_{{ question.id }}_opt2" value="{{ question.option2 }}">
+                            <label class="form-check-label fw-medium w-100" for="live_q_{{ question.id }}_opt2">{{ question.option2 }}</label>
+                        </div>
+
+                        <div class="form-check p-3 rounded-3 border">
+                            <input class="form-check-input ms-0 me-2" type="radio" name="question_{{ question.id }}" id="live_q_{{ question.id }}_opt3" value="{{ question.option3 }}">
+                            <label class="form-check-label fw-medium w-100" for="live_q_{{ question.id }}_opt3">{{ question.option3 }}</label>
+                        </div>
+
+                        <div class="form-check p-3 rounded-3 border">
+                            <input class="form-check-input ms-0 me-2" type="radio" name="question_{{ question.id }}" id="live_q_{{ question.id }}_opt4" value="{{ question.option4 }}">
+                            <label class="form-check-label fw-medium w-100" for="live_q_{{ question.id }}_opt4">{{ question.option4 }}</label>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="mt-4 pt-3 border-top d-flex gap-2">
+            {% if not review_mode %}
+                <button type="submit" class="btn btn-primary btn-lg px-5 rounded-pill shadow-sm">Submit Quiz</button>
+            {% else %}
+                <a href="{% url 'dashboard' %}" class="btn btn-secondary btn-lg px-5 rounded-pill">Back to Dashboard</a>
+            {% endif %}
+        </div>
+    </form>
+</div>
+{% endblock %}

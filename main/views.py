@@ -5,6 +5,11 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from courses.models import Course, Instructor, Enrollment
 from .models import ContactMessage
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+from courses.models import Course
+from courses.models import Enrollment
+from exam.models import Quiz
 
 
 def home(request):
@@ -19,9 +24,35 @@ def faq(request):
 def contact(request):
     return render(request, 'main/contact.html')
 
+
+
+
 @login_required(login_url='login')
 def dashboard(request):
-    return render(request, 'main/dashboard.html')
+
+    student = request.user
+
+    enrollments = Enrollment.objects.filter(student=student)
+
+    enrolled_courses = enrollments.count()
+
+    
+
+    active_courses = Enrollment.objects.filter(student=student)
+    upcoming_exams = Quiz.objects.all()
+
+    context = {
+        'enrolled_courses': enrolled_courses,
+        
+        'active_courses': active_courses,
+        'upcoming_exams': upcoming_exams,
+    }
+
+    return render(
+        request,
+        'main/dashboard.html',
+        context
+    )
 
 
 

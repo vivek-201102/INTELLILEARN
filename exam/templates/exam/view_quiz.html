@@ -22,20 +22,30 @@
             </p>
         </div>
         <div class="d-flex flex-wrap gap-2">
+
             {% if can_manage_course %}
             <a href="{% url 'add_question' quiz.pk %}" class="btn btn-success">
                 <i class="fas fa-plus me-1"></i> Add question
             </a>
+
             <a href="{% url 'edit_quiz' quiz.pk %}" class="btn btn-outline-warning">
                 Edit title
             </a>
+
             <a href="{% url 'delete_quiz' quiz.pk %}" class="btn btn-outline-danger">
                 Delete quiz
             </a>
+
+            {% else %}
+            <a href="{% url 'take_quiz' quiz.pk %}" class="btn btn-success">
+                <i class="fas fa-play me-1"></i> Start Quiz
+            </a>
             {% endif %}
+
             <a href="{% url 'course_detail' course.pk %}?tab=quiz" class="btn btn-primary">
                 <i class="fas fa-arrow-left me-1"></i> Back to course
             </a>
+
         </div>
     </div>
 
@@ -61,6 +71,8 @@
             {% endif %}
         </div>
     </div>
+
+
     {% endfor %}
 
     {% if can_manage_course %}
@@ -80,7 +92,8 @@
 
     {% else %}
     <div class="shadow-sm mb-4">
-        {% include 'main/partials/empty_state.html' with icon='fa-question-circle' title='This quiz has no questions yet' description='Add at least one question to publish this quiz for students.' %}
+        {% include 'main/partials/empty_state.html' with icon='fa-question-circle' title='This quiz has no questions
+        yet' description='Add at least one question to publish this quiz for students.' %}
     </div>
     {% if can_manage_course %}
     <div class="text-center">

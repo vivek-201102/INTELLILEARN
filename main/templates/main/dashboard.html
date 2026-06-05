@@ -3,141 +3,150 @@
 {% block student_content %}
 
 <div class="">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h3 class="fw-bold">Welcome back, <span class="text-primary">  {{ request.user.username }}!</span> 👋</h3>
-                <span class="badge bg-white text-dark shadow-sm p-2 px-3 rounded-pill">
-                    <i class="fas fa-calendar-alt text-primary me-2"></i> May 12, 2026
-                </span>
-            </div>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold">Welcome back, <span class="text-primary"> {{ request.user.username }}!</span> 👋</h3>
+        <span class="badge bg-white text-dark shadow-sm p-2 px-3 rounded-pill">
+            <i class="fas fa-calendar-alt text-primary me-2"></i> {% now "F d, Y" %}
+        </span>
+    </div>
 
-            <div class="row g-3 mb-4">
-                <div class="col-md-4">
-                    <div class="card stat-card shadow-sm">
-                        <div class="d-flex align-items-center">
-                            <div class="icon-shape bg-primary text-white me-3">
-                                <i class="fas fa-graduation-cap"></i>
-                            </div>
-                            <div>
-                                <h4 class="fw-bold mb-0">12</h4>
-                                <p class="text-muted small mb-0">Courses Enrolled</p>
-                            </div>
-                        </div>
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card stat-card shadow-sm">
+                <div class="d-flex align-items-center">
+                    <div class="icon-shape bg-primary text-white me-3">
+                        <i class="fas fa-graduation-cap"></i>
                     </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card stat-card shadow-sm">
-                        <div class="d-flex align-items-center">
-                            <div class="icon-shape bg-success text-white me-3">
-                                <i class="fas fa-check-double"></i>
-                            </div>
-                            <div>
-                                <h4 class="fw-bold mb-0">08</h4>
-                                <p class="text-muted small mb-0">Courses Completed</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card stat-card shadow-sm">
-                        <div class="d-flex align-items-center">
-                            <div class="icon-shape bg-warning text-white me-3">
-                                <i class="fas fa-fire"></i>
-                            </div>
-                            <div>
-                                <h4 class="fw-bold mb-0">15</h4>
-                                <p class="text-muted small mb-0">Day Streak</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row g-4">
-                <div class="col-lg-8">
-                    <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
-                        <h5 class="fw-bold mb-4">Continue Learning</h5>
-                        
-                        <div class="course-mini-card p-3 mb-3 border">
-                            <div class="row align-items-center">
-                                <div class="col-auto">
-                                    <img src="https://img.freepik.com/free-vector/python-concept-illustration_114360-8141.jpg" width="60" class="rounded" alt="Course">
-                                </div>
-                                <div class="col">
-                                    <h6 class="fw-bold mb-1">Advanced Django Web Development</h6>
-                                    <div class="progress progress-ring mt-2">
-                                        <div class="progress-bar bg-primary" style="width: 75%"></div>
-                                    </div>
-                                </div>
-                                <div class="col-auto">
-                                    <span class="badge bg-primary-soft text-primary">75%</span>
-                                    <button class="btn btn-sm btn-primary ms-2">Resume</button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="course-mini-card p-3 mb-3 border">
-                            <div class="row align-items-center">
-                                <div class="col-auto">
-                                    <img src="https://img.freepik.com/free-vector/security-analysts-working-with-data-shield-padlock_335657-3135.jpg" width="60" class="rounded" alt="Course">
-                                </div>
-                                <div class="col">
-                                    <h6 class="fw-bold mb-1">Cybersecurity & Ethical Hacking</h6>
-                                    <div class="progress progress-ring mt-2">
-                                        <div class="progress-bar bg-success" style="width: 30%"></div>
-                                    </div>
-                                </div>
-                                <div class="col-auto">
-                                    <span class="badge bg-success-soft text-success">30%</span>
-                                    <button class="btn btn-sm btn-primary ms-2">Resume</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card border-0 shadow-sm rounded-4 p-4">
-                        <h5 class="fw-bold mb-3"><i class="fas fa-magic text-primary me-2"></i> Smart Recommendations</h5>
-                        <p class="text-muted small">Based on your interest in Python, we suggest:</p>
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <div class="p-3 border rounded-3 bg-light">
-                                    <h6 class="fw-bold small mb-1">Data Science with Pandas</h6>
-                                    <a href="#" class="small text-primary text-decoration-none">Explore Course</a>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="p-3 border rounded-3 bg-light">
-                                    <h6 class="fw-bold small mb-1">Machine Learning Basics</h6>
-                                    <a href="#" class="small text-primary text-decoration-none">Explore Course</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-4">
-                    <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
-                        <h5 class="fw-bold mb-3">Upcoming Exams</h5>
-                        <div class="d-flex mb-3">
-                            <div class="bg-light p-2 rounded text-center me-3" style="min-width: 50px;">
-                                <h5 class="mb-0 fw-bold">15</h5>
-                                <small class="text-muted">MAY</small>
-                            </div>
-                            <div>
-                                <h6 class="mb-0 fw-bold">Django Quiz #4</h6>
-                                <p class="text-muted small mb-0">10:00 AM • 45 Mins</p>
-                            </div>
-                        </div>
-                        <button class="btn btn-outline-primary w-100 btn-sm">View All Exams</button>
-                    </div>
-
-                    <div class="card border-0 shadow-sm rounded-4 p-4 bg-primary text-white">
-                        <h5>Upgrade to Pro</h5>
-                        <p class="small opacity-75">Get access to AI-proctored certificates and coding sandboxes.</p>
-                        <button class="btn btn-light btn-sm w-100 fw-bold">Learn More</button>
+                    <div>
+                        <h4 class="fw-bold mb-0">
+                            {{ enrolled_courses }}
+                        </h4>
+                        <p class="text-muted small mb-0">Courses Enrolled</p>
                     </div>
                 </div>
             </div>
         </div>
+        <div class="col-md-4">
+            <div class="card stat-card shadow-sm">
+                <div class="d-flex align-items-center">
+                    <div class="icon-shape bg-success text-white me-3">
+                        <i class="fas fa-check-double"></i>
+                    </div>
+                   
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card stat-card shadow-sm">
+                <div class="d-flex align-items-center">
+                    <div class="icon-shape bg-warning text-white me-3">
+                        <i class="fas fa-fire"></i>
+                    </div>
+                    <div>
+                        <h4 class="fw-bold mb-0">15</h4>
+                        <p class="text-muted small mb-0">Day Streak</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+                <h5 class="fw-bold mb-4">Continue Learning</h5>
+
+                {% for enrollment in active_courses %}
+
+                <div class="course-mini-card p-3 mb-3 border rounded-3">
+
+                    <div class="row align-items-center">
+
+                        <div class="col">
+
+                            <h6 class="fw-bold">
+                                {{ enrollment.course.title }}
+                            </h6>
+
+                            <small class="text-muted">
+                                Instructor:
+                                {{ enrollment.course.instructor.name }}
+                            </small>
+
+                            <div class="progress mt-2">
+
+                                <div class="progress-bar bg-primary" style="width: 75%;">
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="col-auto">
+
+                            <span class="badge bg-primary">
+                                {{ enrollment.progress }}%
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                {% empty %}
+
+                <div class="alert alert-info">
+                    No active courses found.
+                </div>
+
+                {% endfor %}
+            </div>
+
+            <div class="card border-0 shadow-sm rounded-4 p-4">
+                <h5 class="fw-bold mb-3"><i class="fas fa-magic text-primary me-2"></i> Smart Recommendations</h5>
+                <p class="text-muted small">Based on your interest in Python, we suggest:</p>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="p-3 border rounded-3 bg-light">
+                            <h6 class="fw-bold small mb-1">Data Science with Pandas</h6>
+                            <a href="#" class="small text-primary text-decoration-none">Explore Course</a>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 border rounded-3 bg-light">
+                            <h6 class="fw-bold small mb-1">Machine Learning Basics</h6>
+                            <a href="#" class="small text-primary text-decoration-none">Explore Course</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+                <h5 class="fw-bold mb-3">Upcoming Exams</h5>
+                <div class="d-flex mb-3">
+                    <div class="bg-light p-2 rounded text-center me-3" style="min-width: 50px;">
+                        <h5 class="mb-0 fw-bold">15</h5>
+                        <small class="text-muted">MAY</small>
+                    </div>
+                    <div>
+                        <h6 class="mb-0 fw-bold">Django Quiz #4</h6>
+                        <p class="text-muted small mb-0">10:00 AM • 45 Mins</p>
+                    </div>
+                </div>
+                <button class="btn btn-outline-primary w-100 btn-sm">View All Exams</button>
+            </div>
+
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-primary text-white">
+                <h5>Upgrade to Pro</h5>
+                <p class="small opacity-75">Get access to AI-proctored certificates and coding sandboxes.</p>
+                <button class="btn btn-light btn-sm w-100 fw-bold">Learn More</button>
+            </div>
+        </div>
+    </div>
+</div>
 <!-- Your dashboard cards here -->
 
 {% endblock %}
