@@ -1,0 +1,264 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center align-items-center g-5">
+
+        <div class="col-lg-6 d-none d-lg-block">
+            <div class="position-relative p-5 rounded-4 shadow-sm overflow-hidden text-white d-flex flex-column"
+                style="background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%); min-height: 640px;">
+
+                <div class="position-absolute top-0 start-0 w-100 h-100 opacity-10"
+                    style="background-image: linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px); background-size: 24px 24px;">
+                </div>
+
+                <div class="position-absolute rounded-circle opacity-20"
+                    style="top: -10%; left: -10%; width: 300px; height: 300px; background: #06b6d4; filter: blur(80px);">
+                </div>
+                <div class="position-absolute rounded-circle opacity-20"
+                    style="bottom: 10%; right: -10%; width: 250px; height: 250px; background: #10b981; filter: blur(60px);">
+                </div>
+
+                <div class="mb-4 position-relative">
+                    <span
+                        class="badge bg-info bg-opacity-10 text-info fw-bold px-3 py-2 text-uppercase tracking-wider rounded-pill border border-info border-opacity-25">
+                        <i class="bi bi-cpu-fill me-1"></i> Examination Engine
+                    </span>
+                </div>
+
+                <h2 class="display-6 fw-bold mb-3 position-relative text-white">Create a New Exam</h2>
+                <p class="text-white-50 mb-4 position-relative">
+                    Configure your evaluation parameters, deadlines, and tracking metrics from a central command
+                    dashboard.
+                </p>
+
+                <div class="position-relative my-auto py-4 floating-animation d-flex justify-content-center">
+
+                    <div class="bg-white bg-opacity-10 rounded-4 p-4 border border-white border-opacity-10 shadow-lg position-relative"
+                        style="width: 340px; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
+
+                        <div
+                            class="d-flex align-items-center justify-content-between mb-3 border-bottom border-white border-opacity-10 pb-2">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="rounded-circle bg-danger"
+                                    style="width: 10px; height: 10px; d-block;"></span>
+                                <span class="rounded-circle bg-warning"
+                                    style="width: 10px; height: 10px; d-block;"></span>
+                                <span class="rounded-circle bg-success"
+                                    style="width: 10px; height: 10px; d-block;"></span>
+                            </div>
+                            <span
+                                class="badge bg-success bg-opacity-25 text-success small border border-success border-opacity-25">Live
+                                Preview</span>
+                        </div>
+
+                        <div
+                            class="bg-dark bg-opacity-40 rounded-3 p-2.5 mb-2.5 d-flex align-items-center gap-3 border border-white border-opacity-5">
+                            <div class="bg-primary bg-opacity-20 rounded p-2 text-primary">
+                                <i class="bi bi-file-text fs-5"></i>
+                            </div>
+                            <div class="w-100">
+                                <div class="bg-white bg-opacity-25 rounded-pill mb-2" style="width: 60%; height: 8px;">
+                                </div>
+                                <div class="bg-white bg-opacity-10 rounded-pill" style="width: 40%; height: 6px;"></div>
+                            </div>
+                        </div>
+
+                        <div
+                            class="bg-dark bg-opacity-40 rounded-3 p-2.5 mb-2 d-flex align-items-center gap-3 border border-white border-opacity-5">
+                            <div class="bg-info bg-opacity-20 rounded p-2 text-info">
+                                <i class="bi bi-clock-history fs-5"></i>
+                            </div>
+                            <div class="w-100">
+                                <div class="bg-white bg-opacity-25 rounded-pill mb-2" style="width: 45%; height: 8px;">
+                                </div>
+                                <div class="bg-white bg-opacity-10 rounded-pill" style="width: 75%; height: 6px;"></div>
+                            </div>
+                        </div>
+
+                        <div class="position-absolute bg-gradient rounded-3 p-3 shadow-lg border border-white border-opacity-20 card-pulse"
+                            style="background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); width: 160px; bottom: -25px; right: -40px;">
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <span class="small fw-bold text-white-50 text-uppercase">Metrics</span>
+                                <i class="bi bi-graph-up-arrow text-white"></i>
+                            </div>
+                            <h4 class="fw-bold mb-1 text-white">100%</h4>
+                            <span class="small text-white-50">Validation Rate</span>
+                        </div>
+
+                        <div class="position-absolute bg-white rounded-3 p-2 shadow shadow-sm d-flex align-items-center gap-2"
+                            style="width: 150px; top: -20px; left: -40px; background: rgba(255,255,255,0.95);">
+                            <div class="bg-success rounded-circle d-flex align-items-center justify-content-center text-white"
+                                style="width: 32px; height: 32px;">
+                                <i class="bi bi-person-check-fill"></i>
+                            </div>
+                            <div>
+                                <span class="d-block text-dark fw-bold"
+                                    style="font-size: 0.75rem; line-height: 1;">Instructor</span>
+                                <span class="text-muted" style="font-size: 0.65rem;">Verified Access</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div
+                    class="bg-white bg-opacity-5 rounded-3 p-3 mt-auto border border-white border-opacity-10 position-relative">
+                    <div class="d-flex gap-2 align-items-center">
+                        <i class="bi bi-shield-check text-success fs-4"></i>
+                        <p class="mb-0 small text-black-50">
+                            <strong>System Integrity:</strong>All fields are analyzed in real-time to match global
+                            structural syllabus requirements.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6 col-md-10">
+            <div class="card border-0 shadow-sm rounded-4 p-4 p-sm-5 bg-white">
+
+                <div class="mb-4">
+                    <h3 class="fw-bold text-dark mb-1">Exam Details</h3>
+                    <p class="text-muted small">Fill out the parameters below to establish and list your assessment.</p>
+                </div>
+
+                <form method="POST" novalidate>
+                    {% csrf_token %}
+
+                    {% for field in form %}
+                    <div class="mb-3 text-start">
+
+                        {% if field.field.widget.input_type == 'checkbox' %}
+                        <div class="p-3 rounded-3 border d-flex align-items-center justify-content-between my-4"
+                            style="background-color: #f8fafc; border-color: #cbd5e1;">
+                            <div>
+                                <label for="{{ field.id_for_label }}" class="form-label fw-bold text-dark d-block mb-0"
+                                    style="cursor: pointer;">
+                                    {{ field.label }}
+                                </label>
+                                <small class="text-muted">Toggle this to make the assessment visible to registered
+                                    students.</small>
+                            </div>
+                            <div class="form-check form-switch fs-4 m-0 p-0 d-flex align-items-center">
+                                {{ field }}
+                            </div>
+                        </div>
+                        {% else %}
+                        <label for="{{ field.id_for_label }}" class="form-label fw-semibold text-secondary small">
+                            {{ field.label }}
+                        </label>
+                        <div class="input-group">
+                            {{ field }}
+                        </div>
+                        {% endif %}
+
+                        {% if field.errors %}
+                        {% for error in field.errors %}
+                        <div class="text-danger small mt-1">
+                            <i class="bi bi-exclamation-circle me-1"></i>{{ error }}
+                        </div>
+                        {% endfor %}
+                        {% endif %}
+
+                        {% if field.help_text and field.field.widget.input_type != 'checkbox' %}
+                        <div class="form-text text-muted small">{{ field.help_text }}</div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+
+                    <div class="d-grid mt-4 pt-2">
+                        <button type="submit" class="btn btn-primary btn-lg fw-bold rounded-3 shadow-sm py-2-5 fs-6"
+                            style="background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%); border: none;">
+                            <i class="bi bi-file-earmark-plus-fill me-2"></i>Save & Deploy Exam
+                        </button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<style>
+    .p-2\.5 {
+        padding: 0.65rem !important;
+    }
+
+    .mb-2\.5 {
+        margin-bottom: 0.65rem !important;
+    }
+
+    .py-2-5 {
+        padding-top: 0.75rem;
+        padding-bottom: 0.75rem;
+    }
+
+    /* Elegant floating keyframes for the central card configuration mesh */
+    @keyframes float {
+        0% {
+            transform: translateY(0px) rotate(0deg);
+        }
+
+        50% {
+            transform: translateY(-12px) rotate(0.5deg);
+        }
+
+        100% {
+            transform: translateY(0px) rotate(0deg);
+        }
+    }
+
+    .floating-animation {
+        animation: float 6s ease-in-out infinite;
+    }
+
+    @keyframes microPulse {
+        0% {
+            transform: scale(1) translateY(-25px) translateX(-40px);
+        }
+
+        50% {
+            transform: scale(1.03) translateY(-28px) translateX(-38px);
+        }
+
+        100% {
+            transform: scale(1) translateY(-25px) translateX(-40px);
+        }
+    }
+
+    .card-pulse {
+        animation: microPulse 4s ease-in-out infinite;
+        right: 0px !important;
+        transform: translateY(-25px) translateX(-40px);
+    }
+
+    /* Standardizes raw Django widget controls to look like polished Bootstrap fields */
+    input,
+    select,
+    textarea {
+        display: block;
+        width: 100%;
+        padding: 0.475rem 0.85rem;
+        font-size: 0.95rem;
+        font-weight: 400;
+        line-height: 1.5;
+        color: #334155;
+        background-color: #fff;
+        border: 1px solid #cbd5e1;
+        border-radius: 0.375rem;
+        transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+        color: #1e293b;
+        background-color: #fff;
+        border-color: #3b82f6;
+        outline: 0;
+        box-shadow: 0 0 0 0.25rem rgba(59, 130, 246, 0.15);
+    }
+</style>
+{% endblock %}

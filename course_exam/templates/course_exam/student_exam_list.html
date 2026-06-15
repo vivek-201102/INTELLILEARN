@@ -1,0 +1,81 @@
+{% extends 'main/student_base.html' %}
+
+{% block student_content %}
+
+<div class="container py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h2 class="fw-bold">
+                Upcoming Exams
+            </h2>
+
+            <p class="text-muted mb-0">
+                Register and participate in upcoming examinations.
+            </p>
+        </div>
+
+    </div>
+
+    <div class="row">
+
+        {% for exam in exams %}
+
+        <div class="col-lg-6 mb-4">
+
+            <div class="card shadow-sm border-0 h-100">
+
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between">
+
+                        <h5 class="fw-bold">
+                            {{ exam.title }}
+                        </h5>
+
+                        <span class="badge bg-success">
+                            Active
+                        </span>
+
+                    </div>
+
+                    <p class="text-muted mt-2">
+                        {{ exam.description|truncatewords:20 }}
+                    </p>
+
+                    <hr>
+
+                    <div class="d-grid">
+
+                        <a href="{% url 'exam_detail' exam.id %}" class="btn btn-primary">
+                            View Exam Details
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {% empty %}
+
+        <div class="col-12">
+
+            <div class="alert alert-info">
+
+                No upcoming exams available.
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+{% endblock %}

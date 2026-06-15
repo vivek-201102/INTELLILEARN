@@ -23,8 +23,11 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('', include('main.urls')),
     path('', include('accounts.urls')),
-    path('', include('courses.urls')),
     path('', include('exam.urls')),
+    
+    path('courses/', include('courses.urls')),
+    path('exam/', include('course_exam.urls')),
+
     path('admin/', admin.site.urls),
 ]
 # Serve media files during development

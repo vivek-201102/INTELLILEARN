@@ -1,0 +1,75 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+
+<div class="container py-4">
+
+    <h2 class="mb-4">
+
+        Registered Students
+
+    </h2>
+
+    <div class="card shadow">
+
+        <div class="card-body">
+
+            <table class="table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>#</th>
+                        <th>Student</th>
+                        <th>Registered On</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for reg in registrations %}
+
+                    <tr>
+
+                        <td>
+                            {{ forloop.counter }}
+                        </td>
+
+                        <td>
+                            {{ reg.student.username }}
+                        </td>
+
+                        <td>
+                            {{ reg.registered_at }}
+                        </td>
+
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+
+                        <td colspan="3">
+
+                            No registrations yet.
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

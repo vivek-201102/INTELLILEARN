@@ -1,0 +1,56 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+
+<div class="container py-5">
+
+    <div class="d-flex justify-content-between">
+
+        <h3>Exams</h3>
+
+        <a href="{% url 'create_exam' %}" class="btn btn-primary">
+
+            Create Exam
+
+        </a>
+
+        <a href="{% url 'start_exam' item.exam.id %}"
+            class="btn btn-success btn-lg fw-bold rounded-3 py-2.5 shadow-sm btn-grow d-flex align-items-center justify-content-center gap-2"
+            style="background-color: #10b981; border: none;">
+            <i class="bi bi-play-fill fs-5"></i> Start Examination
+        </a>
+
+    </div>
+
+    <hr>
+
+    {% for exam in exams %}
+
+    <div class="card mb-3">
+
+        <div class="card-body">
+
+            <h5>{{ exam.title }}</h5>
+
+            <p>
+                {{ exam.course }}
+            </p>
+
+            <a href="{% url 'exam_detail' exam.id %}" class="btn btn-outline-primary">
+
+                View
+            </a>
+
+        </div>
+
+    </div>
+
+    {% empty %}
+
+    <p>No exams found.</p>
+
+    {% endfor %}
+
+</div>
+
+{% endblock %}

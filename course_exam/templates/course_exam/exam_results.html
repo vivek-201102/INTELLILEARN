@@ -1,0 +1,55 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+
+<div class="container py-4">
+
+    <h2>
+
+        Exam Results
+
+    </h2>
+
+    <table class="table table-striped">
+
+        <thead>
+
+            <tr>
+
+                <th>Student</th>
+                <th>Score</th>
+                <th>Submitted At</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            {% for attempt in attempts %}
+
+            <tr>
+
+                <td>
+                    {{ attempt.student.username }}
+                </td>
+
+                <td>
+                    {{ attempt.score }}/{{ attempt.total_marks }}
+                </td>
+
+                <td>
+                    {{ attempt.submitted_at }}
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+{% endblock %}

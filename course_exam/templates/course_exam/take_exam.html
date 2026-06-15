@@ -1,0 +1,741 @@
+{% extends 'main/student_base.html' %}
+
+{% block student_content %}
+
+<div class="container py-4">
+
+    <div class="row">
+
+        <div class="col-lg-8 mx-auto">
+
+            <div class="card shadow border-0">
+
+                <div class="card-header bg-primary text-white">
+
+                    <h3 class="mb-0">
+                        {{ exam.title }}
+                    </h3>
+
+                </div>
+
+                <div class="card-body">
+
+                    <!-- TIMER -->
+
+                    <div class="alert alert-danger text-center">
+
+                        <h4 class="mb-0">
+
+                            ⏳ Time Remaining
+
+                            <br>
+
+                            <span id="timer">
+                                00:00:00
+                            </span>
+
+                        </h4>
+
+                    </div>
+
+                    <!-- QUESTION NAVIGATION -->
+
+                    <div class="card mb-4" id="question-{{ question.id }}">
+
+                        <div class="card-header bg-light">
+
+                            <h6 class="mb-0">
+                                Question Navigator
+                            </h6>
+
+                        </div>
+
+                        <div class="card-body text-center">
+
+                            {% for question in questions %}
+
+                            <button type="button" class="btn btn-outline-secondary m-1 question-btn"
+                                id="nav-btn-{{ question.id }}" onclick="scrollToQuestion('{{ question.id }}')">
+
+                                {{ forloop.counter }}
+
+                            </button>
+
+                            {% endfor %}
+
+                        </div>
+
+                    </div>
+
+                    <!-- EXAM FORM -->
+
+                    <form method="POST" id="examForm" action="{% url 'submit_exam' exam.id %}">
+
+                        {% csrf_token %}
+
+                        {% for question in questions %}
+
+                        <div class="card mb-4">
+
+                            <div class="card-body">
+
+                                <h5 class="fw-bold">
+
+                                    Q{{ forloop.counter }}.
+
+                                    {{ question.question_text }}
+
+                                </h5>
+
+                                <hr>
+
+                                <div class="progress mb-4">
+
+                                    <div id="progressBar" class="progress-bar" role="progressbar" style="width:0%">
+
+                                        0%
+
+                                    </div>
+
+                                </div>
+
+                                <div class="form-check mb-2">
+
+                                    <input class="form-check-input" type="radio" name="question_{{ question.id }}"
+                                        value="A" id="q{{ question.id }}a">
+
+                                    <label class="form-check-label" for="q{{ question.id }}a">
+
+                                        {{ question.option_a }}
+
+                                    </label>
+
+                                    <button type="button" class="btn btn-warning btn-sm mark-review"
+                                        data-question="{{ question.id }}">
+
+                                        Mark For Review
+
+                                    </button>
+
+                                    <div class="mt-3">
+
+                                        {% if not forloop.first %}
+
+                                        <button type="button" class="btn btn-secondary prev-question">
+
+                                            Previous
+
+                                        </button>
+
+                                        {% endif %}
+
+                                        {% if not forloop.last %}
+
+                                        <button type="button" class="btn btn-primary next-question">
+
+                                            Next
+
+                                        </button>
+
+                                        {% endif %}
+
+                                    </div>
+
+                                </div>
+
+                                <div class="form-check mb-2">
+
+                                    <input class="form-check-input" type="radio" name="question_{{ question.id }}"
+                                        value="B" id="q{{ question.id }}b">
+
+                                    <label class="form-check-label" for="q{{ question.id }}b">
+
+                                        {{ question.option_b }}
+
+                                    </label>
+
+                                    <button type="button" class="btn btn-warning btn-sm mark-review"
+                                        data-question="{{ question.id }}">
+
+                                        Mark For Review
+
+                                    </button>
+
+                                    <div class="mt-3">
+
+                                        {% if not forloop.first %}
+
+                                        <button type="button" class="btn btn-secondary prev-question">
+
+                                            Previous
+
+                                        </button>
+
+                                        {% endif %}
+
+                                        {% if not forloop.last %}
+
+                                        <button type="button" class="btn btn-primary next-question">
+
+                                            Next
+
+                                        </button>
+
+                                        {% endif %}
+
+                                    </div>
+
+                                </div>
+
+                                <div class="form-check mb-2">
+
+                                    <input class="form-check-input" type="radio" name="question_{{ question.id }}"
+                                        value="C" id="q{{ question.id }}c">
+
+                                    <label class="form-check-label" for="q{{ question.id }}c">
+
+                                        {{ question.option_c }}
+
+                                    </label>
+
+                                    <button type="button" class="btn btn-warning btn-sm mark-review"
+                                        data-question="{{ question.id }}">
+
+                                        Mark For Review
+
+                                    </button>
+
+                                    <div class="mt-3">
+
+                                        {% if not forloop.first %}
+
+                                        <button type="button" class="btn btn-secondary prev-question">
+
+                                            Previous
+
+                                        </button>
+
+                                        {% endif %}
+
+                                        {% if not forloop.last %}
+
+                                        <button type="button" class="btn btn-primary next-question">
+
+                                            Next
+
+                                        </button>
+
+                                        {% endif %}
+
+                                    </div>
+
+                                </div>
+
+                                <div class="form-check">
+
+                                    <input class="form-check-input" type="radio" name="question_{{ question.id }}"
+                                        value="D" id="q{{ question.id }}d">
+
+                                    <label class="form-check-label" for="q{{ question.id }}d">
+
+                                        {{ question.option_d }}
+
+                                    </label>
+
+                                    <button type="button" class="btn btn-warning btn-sm mark-review"
+                                        data-question="{{ question.id }}">
+
+                                        Mark For Review
+
+                                    </button>
+
+                                    <div class="mt-3">
+
+                                        {% if not forloop.first %}
+
+                                        <button type="button" class="btn btn-secondary prev-question">
+
+                                            Previous
+
+                                        </button>
+
+                                        {% endif %}
+
+                                        {% if not forloop.last %}
+
+                                        <button type="button" class="btn btn-primary next-question">
+
+                                            Next
+
+                                        </button>
+
+                                        {% endif %}
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        {% endfor %}
+
+                        <div class="text-center">
+
+                            <button type="button" class="btn btn-success" onclick="showSummary()">
+
+                                Submit Exam
+
+                            </button>
+
+                        </div>
+
+                        <div class="modal fade" id="summaryModal">
+
+                            <div class="modal-dialog">
+
+                                <div class="modal-content">
+
+                                    <div class="modal-header">
+
+                                        <h5>
+
+                                            Exam Summary
+
+                                        </h5>
+
+                                    </div>
+
+                                    <div class="modal-body">
+
+                                        <p>
+
+                                            Answered:
+                                            <span id="answeredCount">
+
+                                            </span>
+
+                                        </p>
+
+                                        <p>
+
+                                            Unanswered:
+                                            <span id="unansweredCount">
+
+                                            </span>
+
+                                        </p>
+
+                                    </div>
+
+                                    <div class="modal-footer">
+
+                                        <button class="btn btn-secondary" data-bs-dismiss="modal">
+
+                                            Cancel
+
+                                        </button>
+
+                                        <button class="btn btn-success"
+                                            onclick="document.getElementById('examForm').submit()">
+
+                                            Confirm Submit
+
+                                        </button>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+    /* ==========================
+       MULTIPLE TAB PROTECTION
+    ========================== */
+
+    if (
+        localStorage.getItem(
+            "exam_running"
+        )
+    ) {
+
+        alert(
+            "Exam is already open in another tab."
+        );
+
+        window.location.href =
+            "{% url 'my_registered_exams' %}";
+    }
+
+    localStorage.setItem(
+        "exam_running",
+        "true"
+    );
+
+    /* ==========================
+       EXAM TIMER
+    ========================== */
+
+    const examId =
+        "{{ exam.id }}";
+
+    let remainingTime =
+        localStorage.getItem(
+            `exam_${examId}_timer`
+        );
+
+    if (!remainingTime) {
+
+        remainingTime =
+            parseInt("{{ exam.duration_minutes }}") * 60;
+
+    } else {
+
+        remainingTime =
+            parseInt(
+                remainingTime
+            );
+    }
+
+    /* ==========================
+       AUTO SUBMIT
+    ========================== */
+
+    function autoSubmitExam() {
+
+        alert(
+            "Time is over. Exam will be submitted automatically."
+        );
+
+        localStorage.removeItem(
+            `exam_${examId}_timer`
+        );
+
+        localStorage.removeItem(
+            "exam_running"
+        );
+
+        document
+            .getElementById(
+                "examForm"
+            )
+            .submit();
+    }
+
+    /* ==========================
+       TIMER FUNCTION
+    ========================== */
+
+    function startTimer() {
+
+        const timer =
+            document.getElementById(
+                "timer"
+            );
+
+        const countdown =
+            setInterval(function () {
+
+                let hours =
+                    Math.floor(
+                        remainingTime / 3600
+                    );
+
+                let minutes =
+                    Math.floor(
+                        (remainingTime % 3600)
+                        / 60
+                    );
+
+                let seconds =
+                    remainingTime % 60;
+
+                timer.innerHTML =
+                    String(hours)
+                        .padStart(2, '0')
+                    + ":" +
+                    String(minutes)
+                        .padStart(2, '0')
+                    + ":" +
+                    String(seconds)
+                        .padStart(2, '0');
+
+                localStorage.setItem(
+                    `exam_${examId}_timer`,
+                    remainingTime
+                );
+
+                remainingTime--;
+
+                if (
+                    remainingTime < 0
+                ) {
+
+                    clearInterval(
+                        countdown
+                    );
+
+                    autoSubmitExam();
+                }
+
+            }, 1000);
+
+    }
+
+
+    startTimer();
+
+    /* ==========================
+       PAGE LEAVE PROTECTION
+    ========================== */
+
+    window.addEventListener(
+        "beforeunload",
+        function (e) {
+
+            e.preventDefault();
+
+            e.returnValue =
+                "Your exam is still running.";
+
+        }
+    );
+
+    /* ==========================
+   QUESTION NAVIGATION
+========================== */
+
+    function scrollToQuestion(questionId) {
+
+        const questionElement =
+            document.getElementById(
+                `question-${questionId}`
+            );
+
+        if (questionElement) {
+
+            questionElement.scrollIntoView({
+
+                behavior: "smooth",
+
+                block: "center"
+
+            });
+
+        }
+
+    }
+
+    function updateProgress() {
+
+        let total =
+            '{{ questions.count }}';
+
+        let answered =
+            document.querySelectorAll(
+                'input[type="radio"]:checked'
+            ).length;
+
+        let percentage =
+            Math.round(
+                answered / total * 100
+            );
+
+        let progressBar =
+            document.getElementById(
+                'progressBar'
+            );
+
+        progressBar.style.width =
+            percentage + "%";
+
+        progressBar.innerHTML =
+            percentage + "%";
+    }
+
+    document
+        .querySelectorAll(
+            'input[type="radio"]'
+        )
+        .forEach(function (input) {
+
+            input.addEventListener(
+                'change',
+                function () {
+
+                    let qid =
+                        this.name.replace(
+                            'question_',
+                            ''
+                        );
+
+                    let btn =
+                        document.getElementById(
+                            'nav-btn-' + qid
+                        );
+
+                    btn.classList.remove(
+                        'btn-outline-secondary'
+                    );
+
+                    btn.classList.add(
+                        'btn-success'
+                    );
+
+                    updateProgress();
+
+                }
+            );
+
+        });
+
+    document
+        .querySelectorAll(
+            '.next-question'
+        )
+        .forEach(function (btn) {
+
+            btn.addEventListener(
+                'click',
+                function () {
+
+                    let card =
+                        this.closest(
+                            '.question-card'
+                        );
+
+                    card.nextElementSibling
+                        .scrollIntoView({
+                            behavior: 'smooth'
+                        });
+
+                }
+            );
+
+        });
+
+    document
+        .querySelectorAll(
+            '.prev-question'
+        )
+        .forEach(function (btn) {
+
+            btn.addEventListener(
+                'click',
+                function () {
+
+                    let card =
+                        this.closest(
+                            '.question-card'
+                        );
+
+                    card.previousElementSibling
+                        .scrollIntoView({
+                            behavior: 'smooth'
+                        });
+
+                }
+            );
+
+        });
+
+
+    function showSummary() {
+
+        let total =
+            '{{ questions.count }}';
+
+    let answered =
+        document.querySelectorAll(
+            'input[type="radio"]:checked'
+        ).length;
+
+    document.getElementById(
+        'answeredCount'
+    ).innerHTML =
+        answered;
+
+    document.getElementById(
+        'unansweredCount'
+    ).innerHTML =
+        total - answered;
+
+    new bootstrap.Modal(
+        document.getElementById(
+            'summaryModal'
+        )
+    ).show();
+
+}
+
+
+    document
+        .querySelectorAll(
+            '.mark-review'
+        )
+        .forEach(function (btn) {
+
+            btn.addEventListener(
+                'click',
+                function () {
+
+                    let qid =
+                        this.dataset.question;
+
+                    let navBtn =
+                        document.getElementById(
+                            'nav-btn-' + qid
+                        );
+
+                    navBtn.classList.remove(
+                        'btn-success'
+                    );
+
+                    navBtn.classList.add(
+                        'btn-warning'
+                    );
+
+                }
+            );
+
+        });
+
+    document
+        .getElementById(
+            "examForm"
+        )
+        .addEventListener(
+            "submit",
+            function () {
+
+                localStorage.removeItem(
+                    `exam_${examId}_timer`
+                );
+
+                localStorage.removeItem(
+                    "exam_running"
+                );
+
+            }
+        );
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+
+<div class="container py-4">
+
+    <h2>
+
+        Submitted Answers
+
+    </h2>
+
+    {% for answer in answers %}
+
+    <div class="card mb-3">
+
+        <div class="card-body">
+
+            <h5>
+
+                {{ answer.question.question_text }}
+
+            </h5>
+
+            <p>
+
+                Your Answer:
+                {{ answer.selected_answer }}
+
+            </p>
+
+            <p>
+
+                Correct Answer:
+                {{ answer.question.correct_answer }}
+
+            </p>
+
+        </div>
+
+    </div>
+
+    {% endfor %}
+
+</div>
+
+{% endblock %}

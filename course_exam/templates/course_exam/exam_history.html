@@ -1,0 +1,51 @@
+{% extends 'main/student_base.html' %}
+
+{% block student_content %}
+
+<div class="container py-4">
+
+    <h2>
+
+        Exam History
+
+    </h2>
+
+    {% for attempt in attempts %}
+
+    <div class="card mb-3">
+
+        <div class="card-body">
+
+            <h5>
+                {{ attempt.exam.title }}
+            </h5>
+
+            <p>
+                Score:
+                {{ attempt.score }}/{{ attempt.total_marks }}
+            </p>
+
+            <a href="{% url 'exam_result' attempt.id %}"
+               class="btn btn-primary">
+
+               View Result
+
+            </a>
+
+        </div>
+
+    </div>
+
+    {% empty %}
+
+    <div class="alert alert-info">
+
+        No completed exams.
+
+    </div>
+
+    {% endfor %}
+
+</div>
+
+{% endblock %}
