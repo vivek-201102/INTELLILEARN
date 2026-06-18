@@ -75,7 +75,7 @@ path(
 
 path(
     '<int:exam_id>/results/',
-    views.exam_results,
+    views.view_answers,
     name='exam_results'
 ),
 
@@ -88,7 +88,7 @@ path(
 
 path(
     'attempt/<int:attempt_id>/answers/',
-    views.view_answers,
+    views.exam_results,
     name='view_answers'
 ),
 

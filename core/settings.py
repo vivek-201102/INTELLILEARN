@@ -86,6 +86,18 @@ DATABASES = {
 }
 
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'intellilearn_db',      # Your database name
+#         'USER': 'postgres',             # PostgreSQL username
+#         'PASSWORD': 'vt611839',    # PostgreSQL password
+#         'HOST': 'localhost',
+#         'PORT': '5432',
+#     }
+# }
+
+
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
 
@@ -110,7 +122,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kolkata'
 
 USE_I18N = True
 
