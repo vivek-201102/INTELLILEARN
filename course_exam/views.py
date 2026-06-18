@@ -502,7 +502,7 @@ def start_exam(request, exam_id):
         )
 
         return redirect(
-            'exam_result',
+            'view_answers',
             attempt.id
         )
 
@@ -527,7 +527,7 @@ def start_exam(request, exam_id):
         )
 
         return redirect(
-            'exam_result',
+            'view_answers',
             attempt.id
         )
 
@@ -581,7 +581,7 @@ def submit_exam(request, exam_id):
         )
 
         return redirect(
-            'exam_result',
+            'view_answers',
             attempt.id
         )
 
@@ -609,7 +609,7 @@ def submit_exam(request, exam_id):
         )
 
         return redirect(
-            'exam_result',
+            'view_answers',
             attempt.id
         )
 
@@ -648,7 +648,7 @@ def submit_exam(request, exam_id):
     )
 
     return redirect(
-        'exam_result',
+        'view_answers',
         attempt.id
     )
 
@@ -691,7 +691,7 @@ def exam_registrations(request, exam_id):
 
 
 @login_required
-def exam_results(request, exam_id):
+def view_answers(request, exam_id):
 
     exam = get_object_or_404(
         Exam,
@@ -747,7 +747,7 @@ def exam_history(request):
 
 
 @login_required
-def view_answers(request, attempt_id):
+def exam_results(request, attempt_id):
 
     attempt = get_object_or_404(
         ExamAttempt,
