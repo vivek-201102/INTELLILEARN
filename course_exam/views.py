@@ -1,19 +1,55 @@
-from django.shortcuts import (render,redirect,get_object_or_404)
+from django.shortcuts import (render, redirect, get_object_or_404)
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import Exam, ExamAttempt, ExamQuestion, ExamRegistration, StudentAnswer
 from .forms import ExamForm, ExamQuestionForm
 from django.utils import timezone
 from datetime import timedelta
+from django.core.exceptions import ObjectDoesNotExist
+from courses.models import Course
+
+
+def get_user_institute(user):
+    try:
+        return user.institute
+    except (AttributeError, ObjectDoesNotExist):
+        return None
+
+
+def get_user_instructor(user):
+    try:
+        return user.instructor
+    except (AttributeError, ObjectDoesNotExist):
+        return None
+
+
+            if not can_manage_exam(request.user, exam):
+    if user == exam.created_by:
+        return True
+    instructor = get_user_instructor(user)
+    if instructor and exam.course.instructor_id == instructor.id:
+        return True
+    institute = get_user_institute(user)
+    if institute and exam.course.institute_id == institute.id:
+        return True
+    return False
 
 
 
 @login_required
 def exam_list(request):
 
-    exams = Exam.objects.filter(
-        is_active=True
-    ).order_by('-created_at')
+    institute = get_user_institute(request.user)
+    instructor = get_user_instructor(request.user)
+
+    exams = Exam.objects.filter(is_active=True)
+    if institute:
+        exams = exams.filter(course__institute=institute)
+    elif instructor:
+        exams = exams.filter(course__instructor=instructor)
+    else:
+        exams = exams.filter(registrations__student=request.user)
+    exams = exams.order_by('-created_at')
 
     return render(
         request,
@@ -28,7 +64,7 @@ def create_exam(request):
 
     if request.method == 'POST':
 
-        form = ExamForm(request.POST)
+        form = ExamForm(request.POST, user=request.user)
 
         if form.is_valid():
 
@@ -50,8 +86,11 @@ def create_exam(request):
             )
 
     else:
+        if get_user_institute(request.user) is None and get_user_instructor(request.user) is None:
+            messages.error(request, 'You do not have permission to create exams.')
+            return redirect('exam_list')
 
-        form = ExamForm()
+        form = ExamForm(user=request.user)
 
     return render(
         request,
@@ -65,8 +104,14 @@ def exam_detail(request, pk):
 
     exam = get_object_or_404(
         Exam,
-        pk=pk
+        pk=pk,
+        is_active=True
     )
+
+    if not can_manage_exam(request.user, exam) and request.user != exam.created_by:
+        if not ExamRegistration.objects.filter(exam=exam, student=request.user).exists():
+            messages.error(request, 'You are not allowed to access this exam.')
+            return redirect('exam_list')
 
     registered_exam_ids = ExamRegistration.objects.filter(
         student=request.user
@@ -91,7 +136,8 @@ def edit_exam(request, pk):
 
     exam = get_object_or_404(
         Exam,
-        pk=pk
+        pk=pk,
+        is_active=True
     )
 
     if request.user != exam.created_by:
@@ -180,6 +226,9 @@ def register_exam(request, pk):
         Exam,
         pk=pk
     )
+    if not exam.is_active:
+        messages.error(request, 'Exam not available.')
+        return redirect('exam_list')
 
     if timezone.now() > exam.registration_deadline:
 
@@ -224,7 +273,7 @@ def add_question(request, exam_id):
         id=exam_id
     )
 
-    if request.user != exam.created_by:
+    if not can_manage_exam(request.user, exam):
         messages.error(
             request,
             "Permission denied."
@@ -283,6 +332,10 @@ def exam_questions(request, exam_id):
         id=exam_id
     )
 
+    if not can_manage_exam(request.user, exam):
+        messages.error(request, 'Permission denied.')
+        return redirect('exam_detail', exam.id)
+
     questions = exam.questions.all()
 
     return render(
@@ -306,7 +359,7 @@ def edit_question(request, pk):
 
     exam = question.exam
 
-    if request.user != exam.created_by:
+    if not can_manage_exam(request.user, exam):
         messages.error(
             request,
             "Permission denied."
@@ -370,7 +423,7 @@ def delete_question(request, pk):
 
     exam = question.exam
 
-    if request.user != exam.created_by:
+    if not can_manage_exam(request.user, exam):
         messages.error(
             request,
             "Permission denied."
@@ -674,6 +727,17 @@ def exam_registrations(request, exam_id):
 
     if request.user != exam.created_by:
 
+        institute = get_user_institute(request.user)
+        if institute is None or exam.course.institute != institute:
+            messages.error(
+                request,
+                "Permission denied."
+            )
+            return redirect(
+                'exam_detail',
+                exam.id
+            )
+
         messages.error(
             request,
             "Permission denied."
@@ -690,12 +754,31 @@ def exam_registrations(request, exam_id):
         'student'
     )
 
+    # Fetch submitted attempts for this exam and map by student id
+    attempts = ExamAttempt.objects.filter(
+        exam=exam,
+        is_submitted=True
+    ).select_related('student')
+
+    attempts_map = {a.student_id: a for a in attempts}
+
+    # Build rows with registration and optional attempt
+    rows = []
+    for reg in registrations:
+        attempt = attempts_map.get(reg.student_id)
+        rows.append({
+            'registration': reg,
+            'student': reg.student,
+            'attempt': attempt,
+            'total_marks': exam.total_marks
+        })
+
     return render(
         request,
         'course_exam/exam_registrations.html',
         {
             'exam': exam,
-            'registrations': registrations
+            'registrations': rows
         }
     )
 

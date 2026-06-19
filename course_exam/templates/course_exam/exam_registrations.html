@@ -23,6 +23,8 @@
                         <th>#</th>
                         <th>Student</th>
                         <th>Registered On</th>
+                        <th>Total Marks</th>
+                        <th>Obtained</th>
 
                     </tr>
 
@@ -43,7 +45,19 @@
                         </td>
 
                         <td>
-                            {{ reg.registered_at }}
+                            {{ reg.registration.registered_at }}
+                        </td>
+
+                        <td>
+                            {{ reg.total_marks }}
+                        </td>
+
+                        <td>
+                            {% if reg.attempt %}
+                                {{ reg.attempt.score }}
+                            {% else %}
+                                —
+                            {% endif %}
                         </td>
 
                     </tr>

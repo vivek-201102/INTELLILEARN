@@ -1,10 +1,37 @@
 from django import forms
+from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Q
 
 from .models import Exam
+from courses.models import Course
 
 
 class ExamForm(forms.ModelForm):
 
+    def __init__(self, *args, user=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['course'].queryset = Course.objects.none()
+        if user is None:
+            return
+
+        institute = None
+        instructor = None
+        try:
+            institute = user.institute
+        except (AttributeError, ObjectDoesNotExist):
+            pass
+        try:
+            instructor = user.instructor
+        except (AttributeError, ObjectDoesNotExist):
+            pass
+
+        if institute or instructor:
+            filters = Q()
+            if institute:
+                filters |= Q(institute=institute)
+            if instructor:
+                filters |= Q(instructor=instructor)
+            self.fields['course'].queryset = Course.objects.filter(filters).distinct()
     class Meta:
 
         model = Exam
