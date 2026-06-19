@@ -485,6 +485,17 @@ def start_exam(request, exam_id):
         student=request.user
     )
 
+    # Check if exam can be started (5 minutes before start time)
+    exam_start_window = exam.start_datetime - timedelta(minutes=5)
+    if timezone.now() < exam_start_window:
+        messages.error(
+            request,
+            f"This exam can only be started 5 minutes before the scheduled start time. Available at: {exam_start_window.strftime('%Y-%m-%d %H:%M:%S')}"
+        )
+        return redirect(
+            'my_registered_exams'
+        )
+
     attempt, created = ExamAttempt.objects.get_or_create(
         exam=exam,
         student=request.user,

@@ -106,11 +106,13 @@
                             ✓ Registered
                         </button>
 
-                        {% elif now < exam.registration_deadline %} <a href="{% url 'register_exam' exam.id %}"
+                        {% elif now < exam.registration_deadline %} 
+                        {% if user.role == 'student' %}
+                        <a href="{% url 'register_exam' exam.id %}"
                             class="btn btn-primary w-100">
                             Register Now
                             </a>
-
+                         {% endif %}
                             {% else %}
 
                             <button class="btn btn-danger w-100" disabled>
