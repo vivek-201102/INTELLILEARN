@@ -319,7 +319,29 @@ def delete_quiz(request, pk):
 
 @login_required
 def take_quiz(request, quiz_pk):
-    quiz = get_object_or_404(Quiz, pk=quiz_pk)
+    from courses.models import Enrollment
+
+    quiz = get_object_or_404(Quiz.objects.select_related('course'), pk=quiz_pk)
+
+    can_manage = user_can_manage_course(request.user, quiz.course)
+
+    # Students must be enrolled in the course to take its quiz.
+    if not can_manage:
+        is_enrolled = Enrollment.objects.filter(
+            student=request.user, course=quiz.course
+        ).exists()
+        if not is_enrolled:
+            messages.error(request, "You must be enrolled in this course to take its quiz.")
+            return redirect('course_detail', pk=quiz.course.pk)
+
+        # One attempt per student: send them to their existing result instead.
+        existing = QuizAttempt.objects.filter(
+            student=request.user, quiz=quiz
+        ).order_by('-completed_at').first()
+        if existing:
+            messages.info(request, "You have already attempted this quiz.")
+            return redirect('quiz_review', attempt_id=existing.id)
+
     questions = quiz.questions.all()
 
     if request.method == "POST":

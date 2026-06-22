@@ -23,7 +23,7 @@ def get_user_instructor(user):
         return None
 
 
-            if not can_manage_exam(request.user, exam):
+def can_manage_exam(user, exam):
     if user == exam.created_by:
         return True
     instructor = get_user_instructor(user)
@@ -183,13 +183,6 @@ def edit_exam(request, pk):
     )
 
 
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-
-from .models import Exam
-
-
 @login_required
 def delete_exam(request, pk):
 
@@ -197,6 +190,10 @@ def delete_exam(request, pk):
         Exam,
         pk=pk
     )
+
+    if not can_manage_exam(request.user, exam):
+        messages.error(request, 'You are not allowed to delete this exam.')
+        return redirect('exam_detail', pk=exam.pk)
 
     if request.method == 'POST':
 
@@ -230,11 +227,26 @@ def register_exam(request, pk):
         messages.error(request, 'Exam not available.')
         return redirect('exam_list')
 
-    if timezone.now() > exam.registration_deadline:
+    now = timezone.now()
+
+    if now > exam.registration_deadline:
 
         messages.error(
             request,
             "Registration deadline has passed."
+        )
+
+        return redirect(
+            'exam_detail',
+            pk=pk
+        )
+
+    # Cannot register once the exam window has opened or closed.
+    if now >= exam.start_datetime:
+
+        messages.error(
+            request,
+            "Registration is closed because the exam has already started."
         )
 
         return redirect(
@@ -469,9 +481,10 @@ def delete_question(request, pk):
 @login_required
 def student_exam_list(request):
 
+    # Show exams that are still joinable (window has not closed yet).
     exams = Exam.objects.filter(
         is_active=True,
-        start_datetime__gte=timezone.now()
+        end_datetime__gte=timezone.now()
     ).order_by('start_datetime')
 
     registered_exam_ids = ExamRegistration.objects.filter(
@@ -658,29 +671,16 @@ def submit_exam(request, exam_id):
         exam.end_datetime
     )
 
-    # Time expired
-    if timezone.now() > exam_end_time:
-
-        attempt.is_submitted = True
-        attempt.submitted_at = exam_end_time
-        attempt.total_marks = exam.total_marks
-
-        attempt.save()
-
-        messages.warning(
-            request,
-            "Exam time has expired."
-        )
-
-        return redirect(
-            'view_answers',
-            attempt.id
-        )
+    time_expired = timezone.now() > exam_end_time
 
     score = 0
+    total_marks = 0
 
-    # Save answers and calculate score
+    # Save answers and calculate score. We grade whatever was submitted even
+    # when time has expired, so a late submission still counts the answers.
     for question in exam.questions.all():
+
+        total_marks += question.marks
 
         answer = request.POST.get(
             f"question_{question.id}"
@@ -698,18 +698,26 @@ def submit_exam(request, exam_id):
 
             score += question.marks
 
-    # Save attempt result
+    # Save attempt result. total_marks is recomputed live (not the stale
+    # Exam.total_marks) and pass/fail is derived from the exam's passing_marks.
     attempt.score = score
-    attempt.total_marks = exam.total_marks
+    attempt.total_marks = total_marks
+    attempt.passed = score >= exam.passing_marks
     attempt.is_submitted = True
-    attempt.submitted_at = timezone.now()
+    attempt.submitted_at = exam_end_time if time_expired else timezone.now()
 
     attempt.save()
 
-    messages.success(
-        request,
-        "Exam submitted successfully."
-    )
+    if time_expired:
+        messages.warning(
+            request,
+            "Your exam time had expired; answers submitted before the deadline were graded."
+        )
+    else:
+        messages.success(
+            request,
+            "Exam submitted successfully."
+        )
 
     return redirect(
         'view_answers',
@@ -725,24 +733,11 @@ def exam_registrations(request, exam_id):
         id=exam_id
     )
 
-    if request.user != exam.created_by:
-
-        institute = get_user_institute(request.user)
-        if institute is None or exam.course.institute != institute:
-            messages.error(
-                request,
-                "Permission denied."
-            )
-            return redirect(
-                'exam_detail',
-                exam.id
-            )
-
+    if not can_manage_exam(request.user, exam):
         messages.error(
             request,
             "Permission denied."
         )
-
         return redirect(
             'exam_detail',
             exam.id
@@ -792,7 +787,7 @@ def view_answers(request, exam_id):
         id=exam_id
     )
 
-    if request.user != exam.created_by:
+    if not can_manage_exam(request.user, exam):
 
         messages.error(
             request,
@@ -844,9 +839,14 @@ def exam_history(request):
 def exam_results(request, attempt_id):
 
     attempt = get_object_or_404(
-        ExamAttempt,
+        ExamAttempt.objects.select_related('exam', 'student'),
         id=attempt_id
     )
+
+    # Only the student who took it, or someone who can manage the exam, may view.
+    if attempt.student != request.user and not can_manage_exam(request.user, attempt.exam):
+        messages.error(request, "You are not allowed to view this result.")
+        return redirect('exam_list')
 
     answers = StudentAnswer.objects.filter(
         attempt=attempt

@@ -21,7 +21,8 @@
                 {% if course.thumbnail %}
                 <img src="{{ course.thumbnail.url }}"
                      class="card-img-top"
-                     style="height:220px; object-fit:cover;">
+                     style="height:220px; object-fit:cover;"
+                     alt="{{ course.title }} thumbnail">
                 {% endif %}
 
                 <div class="card-body d-flex flex-column">

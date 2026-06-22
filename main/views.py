@@ -36,10 +36,12 @@ def dashboard(request):
 
     enrolled_courses = enrollments.count()
 
-    
+    active_courses = enrollments.select_related('course')
 
-    active_courses = Enrollment.objects.filter(student=student)
-    upcoming_exams = Quiz.objects.all()
+    # Only quizzes from courses the student is actually enrolled in.
+    upcoming_exams = Quiz.objects.filter(
+        course__enrollment__student=student
+    ).distinct()
 
     context = {
         'enrolled_courses': enrolled_courses,
@@ -97,7 +99,7 @@ def instructor_dashboard(request):
             "Instructor profile not found."
         )
 
-        return redirect('institute_login')
+        return redirect('institute_login_view')
 
     # Get All Courses of Instructor
     courses = Course.objects.filter(
@@ -140,7 +142,7 @@ def instructor_courses(request):
         instructor = Instructor.objects.get(user=request.user)
 
     except Instructor.DoesNotExist:
-        return redirect('institute_login')
+        return redirect('institute_login_view')
 
     # Get courses assigned to instructor
     courses = Course.objects.filter(instructor=instructor)
@@ -257,6 +259,10 @@ def contact(request):
 
 
 
+from django.contrib.admin.views.decorators import staff_member_required
+
+
+@staff_member_required
 def contact_messages_list(request):
     from django.db.models import Q
     from main.utils import paginate, get_search_term, list_page_context

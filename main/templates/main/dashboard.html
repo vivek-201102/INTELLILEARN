@@ -11,7 +11,7 @@
     </div>
 
     <div class="row g-3 mb-4">
-        <div class="col-md-4">
+        <div class="col-md-6">
             <div class="card stat-card shadow-sm">
                 <div class="d-flex align-items-center">
                     <div class="icon-shape bg-primary text-white me-3">
@@ -26,25 +26,15 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-6">
             <div class="card stat-card shadow-sm">
                 <div class="d-flex align-items-center">
                     <div class="icon-shape bg-success text-white me-3">
-                        <i class="fas fa-check-double"></i>
-                    </div>
-                   
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card stat-card shadow-sm">
-                <div class="d-flex align-items-center">
-                    <div class="icon-shape bg-warning text-white me-3">
-                        <i class="fas fa-fire"></i>
+                        <i class="fas fa-clipboard-check"></i>
                     </div>
                     <div>
-                        <h4 class="fw-bold mb-0">15</h4>
-                        <p class="text-muted small mb-0">Day Streak</p>
+                        <h4 class="fw-bold mb-0">{{ upcoming_exams|length }}</h4>
+                        <p class="text-muted small mb-0">Quizzes Available</p>
                     </div>
                 </div>
             </div>
@@ -73,20 +63,14 @@
                                 {{ enrollment.course.instructor.name }}
                             </small>
 
-                            <div class="progress mt-2">
-
-                                <div class="progress-bar bg-primary" style="width: 75%;">
-                                </div>
-
-                            </div>
-
                         </div>
 
                         <div class="col-auto">
 
-                            <span class="badge bg-primary">
-                                {{ enrollment.progress }}%
-                            </span>
+                            <a href="{% url 'course_detail' enrollment.course.pk %}"
+                               class="btn btn-sm btn-outline-primary">
+                                Continue
+                            </a>
 
                         </div>
 
@@ -125,18 +109,20 @@
 
         <div class="col-lg-4">
             <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
-                <h5 class="fw-bold mb-3">Upcoming Exams</h5>
-                <div class="d-flex mb-3">
+                <h5 class="fw-bold mb-3">Available Quizzes</h5>
+                {% for quiz in upcoming_exams %}
+                <div class="d-flex align-items-center mb-3">
                     <div class="bg-light p-2 rounded text-center me-3" style="min-width: 50px;">
-                        <h5 class="mb-0 fw-bold">15</h5>
-                        <small class="text-muted">MAY</small>
+                        <i class="fas fa-pen-to-square text-primary"></i>
                     </div>
                     <div>
-                        <h6 class="mb-0 fw-bold">Django Quiz #4</h6>
-                        <p class="text-muted small mb-0">10:00 AM • 45 Mins</p>
+                        <h6 class="mb-0 fw-bold">{{ quiz.title }}</h6>
+                        <p class="text-muted small mb-0">{{ quiz.course.title }}</p>
                     </div>
                 </div>
-                <button class="btn btn-outline-primary w-100 btn-sm">View All Exams</button>
+                {% empty %}
+                <p class="text-muted small mb-0">No quizzes available from your enrolled courses yet.</p>
+                {% endfor %}
             </div>
 
             <div class="card border-0 shadow-sm rounded-4 p-4 bg-primary text-white">

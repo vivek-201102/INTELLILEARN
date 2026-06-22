@@ -13,6 +13,15 @@ class Instructor(models.Model):
 
     user = models.OneToOneField(User,on_delete=models.CASCADE,null=True,blank=True)
 
+    # The institute this instructor belongs to (data isolation between institutes).
+    institute = models.ForeignKey(
+        Institute,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='instructors',
+    )
+
     def __str__(self):
         return self.name
 
@@ -118,6 +127,9 @@ class Enrollment(models.Model):
     enrolled_at = models.DateTimeField(
         auto_now_add=True
     )
+
+    class Meta:
+        unique_together = ('student', 'course')
 
     def __str__(self):
         return f"{self.student.username} enrolled in {self.course.title}"

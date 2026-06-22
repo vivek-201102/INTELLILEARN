@@ -143,6 +143,10 @@ class ExamAttempt(models.Model):
         default=False
     )
 
+    passed = models.BooleanField(
+        default=False
+    )
+
     class Meta:
         unique_together = (
             'exam',

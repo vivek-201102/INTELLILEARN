@@ -43,6 +43,15 @@ def registration(request):
 
             return redirect('registration')
 
+        # Enforce password strength (uses AUTH_PASSWORD_VALIDATORS).
+        from django.contrib.auth.password_validation import validate_password
+        from django.core.exceptions import ValidationError
+        try:
+            validate_password(password)
+        except ValidationError as e:
+            messages.error(request, " ".join(e.messages))
+            return redirect('registration')
+
         # Create User
         user = User.objects.create_user(
             username=username,
@@ -71,24 +80,16 @@ def login_user(request):
         password = request.POST.get('password')
 
         # Get Username Using Email
+        user = None
         try:
-
             user_obj = User.objects.get(email=email)
-
-            username = user_obj.username
-
+            user = authenticate(
+                request,
+                username=user_obj.username,
+                password=password
+            )
         except User.DoesNotExist:
-
-            messages.error(request, "Invalid Email")
-
-            return redirect('login')
-
-        # Authenticate
-        user = authenticate(
-            request,
-            username=username,
-            password=password
-        )
+            user = None
 
         if user is not None:
 
@@ -99,8 +100,8 @@ def login_user(request):
             return redirect('home')
 
         else:
-
-            messages.error(request, "Invalid Password")
+            # Generic message so accounts/emails cannot be enumerated.
+            messages.error(request, "Invalid email or password")
 
             return redirect('login')
 
@@ -135,6 +136,15 @@ def institute_register(request):
             messages.error(request, "Email already exists")
             return redirect('institute_register')
 
+        # Enforce password strength (uses AUTH_PASSWORD_VALIDATORS).
+        from django.contrib.auth.password_validation import validate_password
+        from django.core.exceptions import ValidationError
+        try:
+            validate_password(password)
+        except ValidationError as e:
+            messages.error(request, " ".join(e.messages))
+            return redirect('institute_register')
+
         # Create User
         user = User.objects.create_user(username=username, email=email, password=password)
 
@@ -161,10 +171,8 @@ from courses.models import Instructor
 
 
 def institute_login_view(request):
-    print("test")
     # Already Logged In
     if request.user.is_authenticated:
-        print("test2")
         # Institute User
         if Institute.objects.filter(user=request.user).exists():
             return redirect('institute_dashboard')
@@ -174,10 +182,8 @@ def institute_login_view(request):
             return redirect('instructor_dashboard')
 
     if request.method == "POST":
-        print("test3")
         username_or_email = request.POST.get('username')
         password = request.POST.get('password')
-        print(username_or_email,password)
         user = None
 
         # Login using Email OR Username
@@ -241,15 +247,23 @@ def institute_dashboard(request):
     try:
         institute_data = Institute.objects.get(user=request.user)
 
-        total_instructors = Instructor.objects.count()
+        # Every metric is scoped to THIS institute so one institute can never
+        # see another institute's instructors, courses, students or enrollments.
+        institute_courses = Course.objects.filter(institute=institute_data)
 
-        total_courses = Course.objects.count()
+        total_instructors = Instructor.objects.filter(
+            institute=institute_data
+        ).count()
 
-        total_students = Enrollment.objects.values(
-            'student'
-        ).distinct().count()
+        total_courses = institute_courses.count()
 
-        total_enrollments = Enrollment.objects.count()
+        total_students = Enrollment.objects.filter(
+            course__institute=institute_data
+        ).values('student').distinct().count()
+
+        total_enrollments = Enrollment.objects.filter(
+            course__institute=institute_data
+        ).count()
 
         context = {
             'institute': institute_data,

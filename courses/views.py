@@ -2,14 +2,18 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.db.models import Q
 from .models import Instructor, Course, Enrollment, Note
-from .forms import InstructorForm, CourseForm
+from .forms import InstructorForm, InstructorProfileForm, CourseForm
 from django.contrib.auth.decorators import login_required
 from accounts.models import Institute
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate, login
 from django.contrib import messages
 from main.utils import paginate, get_search_term, list_page_context
-from .permissions import user_can_manage_course, course_manage_denied_response
+from .permissions import (
+    user_can_manage_course,
+    course_manage_denied_response,
+    institute_required,
+    get_institute,
+)
 
 
 def instructor_list(request):
@@ -30,31 +34,26 @@ def instructor_detail(request, pk):
     instructor = get_object_or_404(Instructor, pk=pk)
     return render(request, 'courses/detail.html', {'instructor': instructor})
 
-def instructor_create(request):
-    if request.method == "POST":
-        form = InstructorForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            return redirect('instructor_list')
-    else:
-        form = InstructorForm()
-    return render(request, 'courses/form.html', {'form': form, 'title': 'Add Instructor'})
-
+@institute_required
 def instructor_edit(request, pk):
-    instructor = get_object_or_404(Instructor, pk=pk)
+    # An institute may only edit instructors that belong to it.
+    instructor = get_object_or_404(Instructor, pk=pk, institute=request.institute)
     if request.method == "POST":
-        form = InstructorForm(request.POST, request.FILES, instance=instructor)
+        form = InstructorProfileForm(request.POST, request.FILES, instance=instructor)
         if form.is_valid():
             form.save()
+            messages.success(request, "Instructor updated successfully.")
             return redirect('instructor_list')
     else:
-        form = InstructorForm(instance=instructor)
+        form = InstructorProfileForm(instance=instructor)
     return render(request, 'courses/form.html', {'form': form, 'title': 'Edit Instructor'})
 
+@institute_required
 def instructor_delete(request, pk):
-    instructor = get_object_or_404(Instructor, pk=pk)
+    instructor = get_object_or_404(Instructor, pk=pk, institute=request.institute)
     if request.method == "POST":
         instructor.delete()
+        messages.success(request, "Instructor deleted successfully.")
         return redirect('instructor_list')
     return render(request, 'courses/confirm_delete.html', {'instructor': instructor})
 
@@ -99,57 +98,51 @@ def course_detail(request, pk):
     })
         
 
+@institute_required
 def course_create(request):
+    institute = request.institute
     if request.method == "POST":
-        form = CourseForm(request.POST, request.FILES)
+        form = CourseForm(request.POST, request.FILES, institute=institute)
 
         if form.is_valid():
-
             course = form.save(commit=False)
-            course.institute = request.user.institute
+            course.institute = institute
             course.is_active = True
-
             course.save()
 
-            print("Saved Course ID:", course.id)
-            print("Saved Course:", course.title)
-
+            messages.success(request, "Course created successfully.")
             return redirect('course_list')
-
-        else:
-            print(form.errors)
-
     else:
-        form = CourseForm()
+        form = CourseForm(institute=institute)
 
     return render(request, 'courses/add_courses.html', {
         'form': form,
         'title': 'Create New Course'
     })
 
+@institute_required
 def course_edit(request, pk):
-    course = get_object_or_404(Course, pk=pk)
+    institute = request.institute
+    # An institute may only edit its own courses.
+    course = get_object_or_404(Course, pk=pk, institute=institute)
     if request.method == "POST":
-        form = CourseForm(request.POST, request.FILES, instance=course)
+        form = CourseForm(request.POST, request.FILES, instance=course, institute=institute)
         if form.is_valid():
             course = form.save(commit=False)
-
-            course.institute = request.user.institute
-
-            course.is_active = True
-
+            course.institute = institute
             course.save()
-
+            messages.success(request, "Course updated successfully.")
             return redirect('course_list')
-
     else:
-        form = CourseForm(instance=course)
+        form = CourseForm(instance=course, institute=institute)
     return render(request, 'courses/add_courses.html', {'form': form, 'title': 'Edit Course'})
 
+@institute_required
 def course_delete(request, pk):
-    course = get_object_or_404(Course, pk=pk)
+    course = get_object_or_404(Course, pk=pk, institute=request.institute)
     if request.method == "POST":
         course.delete()
+        messages.success(request, "Course deleted successfully.")
         return redirect('course_list')
     return render(request, 'courses/confirm_delete.html', {'course': course})
 
@@ -167,21 +160,23 @@ def courses_enroll(request, pk):
         course=course
     ).exists()
    
-    if not already_enrolled:
+    if already_enrolled:
+        messages.info(request, "You are already enrolled in this course.")
+    else:
         Enrollment.objects.create(
             student=request.user,
             course=course
         )
-        
+        messages.success(request, "Enrolled successfully.")
 
     return redirect('course_detail', pk=pk)
 
 
 
-@login_required
+@institute_required
 def institute_students(request):
 
-    institute = request.user.institute
+    institute = request.institute
 
     queryset = Enrollment.objects.filter(
         course__institute=institute
@@ -207,6 +202,11 @@ def course_students(request, pk):
 
     course = get_object_or_404(Course, pk=pk)
 
+    # Only the owning institute or the assigned instructor may see the roster.
+    if not user_can_manage_course(request.user, course):
+        messages.error(request, "You do not have permission to view this course's students.")
+        return redirect('course_detail', pk=pk)
+
     queryset = Enrollment.objects.filter(
         course=course
     ).select_related('student').order_by('-enrolled_at')
@@ -224,8 +224,10 @@ def course_students(request, pk):
     return render(request, 'courses/course_students.html', context)
 
 
+@institute_required
 def instructor_create(request):
-
+    # Only an institute can create instructors, and the new instructor is
+    # bound to that institute so other institutes never see or manage it.
     if request.method == "POST":
 
         form = InstructorForm(request.POST, request.FILES)
@@ -238,11 +240,11 @@ def instructor_create(request):
             )
 
             instructor = form.save(commit=False)
-
             instructor.user = user
-
+            instructor.institute = request.institute
             instructor.save()
 
+            messages.success(request, "Instructor created successfully.")
             return redirect('instructor_list')
 
     else:
@@ -260,38 +262,6 @@ def instructor_create(request):
 
 
 
-    if request.method == "POST":
-        username_val = request.POST.get('username')
-        password_val = request.POST.get('password')
-        
-        user = authenticate(request, username=username_val, password=password_val)
-        
-        if user is not None:
-            login(request, user)
-            
-            # --- ROLE ROUTING DETECTOR ---
-            # Check 1: Is this user an Institute?
-            try:
-                if user.institute:
-                    # Redirects to the Institute's view (your course list or equivalent management page)
-                    return redirect('course_list') 
-            except AttributeError:
-                pass  # Not an institute, check instructor status next
-            
-            # Check 2: Is this user an Instructor?
-            if hasattr(user, 'instructor'):
-                # Redirects to the Instructor's active layout view
-                return redirect('instructor_list')
-                
-            # Default Fallback (e.g., standard students or superusers)
-            return redirect('course_list')
-        else:
-            messages.error(request, "Invalid authentication credentials. Please try again.")
-            
-    return render(request, 'courses/login.html')
-
-
-    
 
 @login_required
 def manage_note(request, course_pk, note_pk=None):
@@ -390,53 +360,3 @@ def delete_note(request, course_pk, note_pk):
             'note': note,
         }
     )
-
-    # note = get_object_or_404(Note, pk=pk)
-
-    # # Only Institute or Instructor Can Edit
-    # if not (
-    #     Institute.objects.filter(user=request.user).exists() or
-    #     Instructor.objects.filter(user=request.user).exists()
-    # ):
-
-    #     messages.error(
-    #         request,
-    #         "You are not allowed to edit notes."
-    #     )
-
-    #     return redirect('course_detail', pk=note.course.pk)
-
-    # if request.method == "POST":
-
-    #     form = NotesForm(
-    #         request.POST,
-    #         request.FILES,
-    #         instance=note
-    #     )
-
-    #     if form.is_valid():
-
-    #         form.save()
-
-    #         messages.success(
-    #             request,
-    #             "Note updated successfully."
-    #         )
-
-    #         return redirect(
-    #             'course_detail',
-    #             pk=note.course.pk
-    #         )
-
-    # else:
-
-    #     form = NotesForm(instance=note)
-
-    # return render(
-    #     request,
-    #     'courses/edit_note.html',
-    #     {
-    #         'form': form,
-    #         'note': note
-    #     }
-    # )

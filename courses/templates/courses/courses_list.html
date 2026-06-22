@@ -26,7 +26,7 @@
     <div class="col-lg-4 col-md-6" data-il-animate>
         <div class="card card-il h-100 overflow-hidden">
             <div class="position-relative">
-                <img src="{{ c.thumbnail.url }}" class="card-img-top" style="height: 200px; object-fit: cover;" alt="">
+                <img src="{{ c.thumbnail.url }}" class="card-img-top" style="height: 200px; object-fit: cover;" alt="{{ c.title }} thumbnail">
                 <span class="position-absolute top-0 end-0 m-3 badge bg-primary px-3 py-2 shadow">
                     {% if c.price == 0 %}Free{% else %}₹{{ c.price }}{% endif %}
                 </span>
@@ -34,7 +34,7 @@
             <div class="card-body">
                 <div class="d-flex align-items-center mb-2">
                     {% if c.instructor.profile_image %}
-                    <img src="{{ c.instructor.profile_image.url }}" class="rounded-circle me-2" width="32" height="32" style="object-fit:cover" alt="">
+                    <img src="{{ c.instructor.profile_image.url }}" class="rounded-circle me-2" width="32" height="32" style="object-fit:cover" alt="{{ c.instructor.name }}">
                     {% endif %}
                     <span class="small text-muted">{{ c.instructor.name }}</span>
                 </div>

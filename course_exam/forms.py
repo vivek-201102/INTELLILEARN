@@ -32,6 +32,25 @@ class ExamForm(forms.ModelForm):
             if instructor:
                 filters |= Q(instructor=instructor)
             self.fields['course'].queryset = Course.objects.filter(filters).distinct()
+
+    def clean(self):
+        cleaned = super().clean()
+        deadline = cleaned.get('registration_deadline')
+        start = cleaned.get('start_datetime')
+        end = cleaned.get('end_datetime')
+
+        if deadline and start and deadline > start:
+            self.add_error(
+                'registration_deadline',
+                "Registration deadline must be on or before the exam start time."
+            )
+        if start and end and start >= end:
+            self.add_error(
+                'end_datetime',
+                "End time must be after the start time."
+            )
+        return cleaned
+
     class Meta:
 
         model = Exam
