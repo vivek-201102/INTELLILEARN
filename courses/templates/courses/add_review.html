@@ -1,0 +1,42 @@
+{% extends 'main/student_base.html' %}
+
+{% block student_content %}
+
+<div class="card shadow p-4">
+
+    <h3>Rate This Course</h3>
+
+    <form method="POST">
+
+        {% csrf_token %}
+
+        <label>Rating</label>
+
+        <select name="rating" class="form-control mb-3">
+
+            <option value="5">⭐⭐⭐⭐⭐</option>
+            <option value="4">⭐⭐⭐⭐</option>
+            <option value="3">⭐⭐⭐</option>
+            <option value="2">⭐⭐</option>
+            <option value="1">⭐</option>
+
+        </select>
+
+        <label>Review</label>
+
+        <textarea
+            name="comment"
+            class="form-control mb-3"
+            rows="5">{{ review.comment }}</textarea>
+
+        <button class="btn btn-success">
+
+            Submit Review
+
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}

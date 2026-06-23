@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'courses',
     'exam',
     'course_exam',
+    'bookmarks',
 ]
 
 MIDDLEWARE = [

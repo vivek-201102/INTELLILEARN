@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.db.models import Q
+
+from bookmarks.models import Bookmark
 from .models import Instructor, Course, Enrollment, Note
 from .forms import InstructorForm, InstructorProfileForm, CourseForm
 from django.contrib.auth.decorators import login_required
@@ -14,6 +16,9 @@ from .permissions import (
     institute_required,
     get_institute,
 )
+
+
+
 
 
 def instructor_list(request):
@@ -57,9 +62,18 @@ def instructor_delete(request, pk):
         return redirect('instructor_list')
     return render(request, 'courses/confirm_delete.html', {'instructor': instructor})
 
+
+
 def course_list(request):
-    queryset = Course.objects.select_related('instructor').order_by('-created_at')
+
+    queryset = Course.objects.select_related(
+        'instructor'
+    ).order_by(
+        '-created_at'
+    )
+
     q = get_search_term(request)
+
     if q:
         queryset = queryset.filter(
             Q(title__icontains=q)
@@ -67,15 +81,61 @@ def course_list(request):
             | Q(instructor__name__icontains=q)
             | Q(duration__icontains=q)
         )
-    page_obj = paginate(request, queryset, per_page=9)
-    context = list_page_context(request, page_obj, 'Search courses by title, topic, or instructor…')
-    return render(request, 'courses/courses_list.html', context)
+
+    # Filter Section
+    filter_by = request.GET.get('filter')
+
+    if filter_by == 'free':
+        queryset = queryset.filter(
+            price=0
+        )
+
+    elif filter_by == 'paid':
+        queryset = queryset.filter(
+            price__gt=0
+        )
+
+    elif filter_by == 'latest':
+        queryset = queryset.order_by(
+            '-created_at'
+        )
+
+    elif filter_by == 'oldest':
+        queryset = queryset.order_by(
+            'created_at'
+        )
+
+    page_obj = paginate(
+        request,
+        queryset,
+        per_page=9
+    )
+
+    context = list_page_context(
+        request,
+        page_obj,
+        'Search courses by title, topic, or instructor…'
+    )
+
+    return render(
+        request,
+        'courses/courses_list.html',
+        context
+    )
+
+
+
+from bookmarks.models import Bookmark
 
 def course_detail(request, pk):
 
-    course = get_object_or_404(Course, pk=pk)
+    course = get_object_or_404(
+        Course,
+        pk=pk
+    )
 
     is_enrolled = False
+    is_bookmarked = False
 
     if request.user.is_authenticated:
 
@@ -84,19 +144,39 @@ def course_detail(request, pk):
             course=course
         ).exists()
 
+        is_bookmarked = Bookmark.objects.filter(
+            student=request.user,
+            course=course
+        ).exists()
+
     notes = course.notes.all()
-    quizzes = course.quizzes.prefetch_related('questions').all()
 
-    can_manage_course = user_can_manage_course(request.user, course)
+    quizzes = course.quizzes.prefetch_related(
+        'questions'
+    ).all()
 
-    return render(request, 'courses/courses_detail.html', {
-        'course': course,
-        'is_enrolled': is_enrolled,
-        'notes': notes,
-        'quizzes': quizzes,
-        'can_manage_course': can_manage_course,
-    })
-        
+    can_manage_course = user_can_manage_course(
+        request.user,
+        course
+    )
+
+    reviews = course.reviews.select_related(
+        'student'
+    ).all()
+
+    return render(
+        request,
+        'courses/courses_detail.html',
+        {
+            'course': course,
+            'is_enrolled': is_enrolled,
+            'is_bookmarked': is_bookmarked,
+            'notes': notes,
+            'quizzes': quizzes,
+            'can_manage_course': can_manage_course,
+            'reviews': reviews,
+        }
+    )        
 
 @institute_required
 def course_create(request):
@@ -358,5 +438,126 @@ def delete_note(request, course_pk, note_pk):
         {
             'course': course,
             'note': note,
+        }
+    )
+
+
+
+
+@login_required
+def certificate_view(request, enrollment_id):
+
+    enrollment = get_object_or_404(
+        Enrollment,
+        id=enrollment_id,
+        student=request.user
+    )
+
+    if not enrollment.certificate_eligible:
+
+        return render(
+            request,
+            'courses/certificate_not_eligible.html',
+            {
+                'enrollment': enrollment
+            }
+        )
+
+    return render(
+        request,
+        'courses/certificate.html',
+        {
+            'enrollment': enrollment
+        }
+    )
+
+
+from .models import Review
+
+from django.db.models import Avg
+from .models import Review
+
+
+@login_required
+def add_review(request, pk):
+
+    course = get_object_or_404(
+        Course,
+        pk=pk
+    )
+
+    if not Enrollment.objects.filter(
+        student=request.user,
+        course=course
+    ).exists():
+
+        messages.error(
+            request,
+            "You must enroll before reviewing."
+        )
+
+        return redirect(
+            'course_detail',
+            pk=pk
+        )
+
+    review = Review.objects.filter(
+        student=request.user,
+        course=course
+    ).first()
+
+    reviews = Review.objects.filter(
+        course=course
+    ).select_related(
+        'student'
+    ).order_by('-created_at')
+
+    avg_rating = reviews.aggregate(
+        Avg('rating')
+    )['rating__avg']
+
+    if request.method == "POST":
+
+        rating = request.POST.get('rating')
+        comment = request.POST.get('comment')
+
+        if review:
+
+            review.rating = rating
+            review.comment = comment
+            review.save()
+
+            messages.success(
+                request,
+                "Review updated successfully."
+            )
+
+        else:
+
+            Review.objects.create(
+                student=request.user,
+                course=course,
+                rating=rating,
+                comment=comment
+            )
+
+            messages.success(
+                request,
+                "Review submitted successfully."
+            )
+
+        return redirect(
+            'add_review',
+            pk=pk
+        )
+
+    return render(
+        request,
+        'courses/add_review.html',
+        {
+            'course': course,
+            'review': review,
+            'reviews': reviews,
+            'avg_rating': avg_rating or 0,
         }
     )

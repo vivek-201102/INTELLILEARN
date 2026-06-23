@@ -29,6 +29,11 @@ urlpatterns = [
     path('exam/', include('course_exam.urls')),
 
     path('admin/', admin.site.urls),
+
+    path(
+    'bookmarks/',
+    include('bookmarks.urls')
+),
 ]
 # Serve media files during development
 if settings.DEBUG:

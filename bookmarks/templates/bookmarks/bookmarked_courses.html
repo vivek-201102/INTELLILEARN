@@ -1,0 +1,54 @@
+{% extends 'main/student_base.html' %}
+
+{% block student_content %}
+
+<h3 class="mb-4">
+    <i class="fas fa-bookmark text-primary"></i>
+    My Bookmarked Courses
+</h3>
+
+<div class="row">
+
+    {% for bookmark in bookmarks %}
+
+    <div class="col-md-4 mb-4">
+
+        <div class="card shadow-sm">
+
+            <img src="{{ bookmark.course.thumbnail.url }}"
+                 class="card-img-top">
+
+            <div class="card-body">
+
+                <h5>
+                    {{ bookmark.course.title }}
+                </h5>
+
+                <p class="text-muted">
+                    {{ bookmark.course.instructor.name }}
+                </p>
+
+                <a href="{% url 'course_detail' bookmark.course.id %}"
+                   class="btn btn-primary">
+
+                    View Course
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    {% empty %}
+
+    <div class="alert alert-info">
+        No bookmarked courses yet.
+    </div>
+
+    {% endfor %}
+
+</div>
+
+{% endblock %}

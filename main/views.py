@@ -10,7 +10,7 @@ from django.shortcuts import render
 from courses.models import Course
 from courses.models import Enrollment
 from exam.models import Quiz
-
+from django.utils import timezone
 
 def home(request):
     return render(request, 'main/home.html')
@@ -26,26 +26,25 @@ def contact(request):
 
 
 
-
 @login_required(login_url='login')
 def dashboard(request):
 
     student = request.user
 
-    enrollments = Enrollment.objects.filter(student=student)
+    enrollments = Enrollment.objects.filter(
+        student=student
+    ).select_related('course')
 
     enrolled_courses = enrollments.count()
 
-    active_courses = enrollments.select_related('course')
+    active_courses = enrollments
 
-    # Only quizzes from courses the student is actually enrolled in.
     upcoming_exams = Quiz.objects.filter(
         course__enrollment__student=student
     ).distinct()
 
     context = {
         'enrolled_courses': enrolled_courses,
-        
         'active_courses': active_courses,
         'upcoming_exams': upcoming_exams,
     }
@@ -55,7 +54,6 @@ def dashboard(request):
         'main/dashboard.html',
         context
     )
-
 
 
 
@@ -130,8 +128,6 @@ def instructor_dashboard(request):
         'main/instructor_dashboard.html',
         context
     )
-
-
 
 
 

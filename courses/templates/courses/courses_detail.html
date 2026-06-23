@@ -62,14 +62,16 @@
         padding: 1.5rem;
     }
 
-    .note-card, .quiz-card {
+    .note-card,
+    .quiz-card {
         border: 1px solid #e9ecef;
         border-radius: 14px;
         transition: box-shadow 0.2s, transform 0.2s;
         height: 100%;
     }
 
-    .note-card:hover, .quiz-card:hover {
+    .note-card:hover,
+    .quiz-card:hover {
         box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
         transform: translateY(-2px);
     }
@@ -120,6 +122,32 @@
         border-radius: 14px;
         border: 1px dashed #ced4da;
     }
+
+    .bookmark-btn{
+    width:45px;
+    height:45px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#fff;
+    border:1px solid #dee2e6;
+    text-decoration:none;
+    font-size:1.2rem;
+    transition:all .3s ease;
+}
+
+.bookmark-btn:hover{
+    transform:scale(1.08);
+}
+
+.bookmark-btn .fas{
+    color:#184eff;
+}
+
+.bookmark-btn .far{
+    color:#575757;
+}
 </style>
 
 <!-- Hero -->
@@ -137,23 +165,25 @@
             </div>
             <div class="col-md-4">
                 <div class="card border-0 shadow-lg text-dark rounded-4 overflow-hidden">
-                    <img src="{{ course.thumbnail.url }}" class="card-img-top" alt="{{ course.title }}" style="height: 160px; object-fit: cover;">
+                    <img src="{{ course.thumbnail.url }}" class="card-img-top" alt="{{ course.title }}"
+                        style="height: 160px; object-fit: cover;">
                     <div class="card-body text-center p-4">
                         <h2 class="fw-bold mb-3">₹{{ course.price }}</h2>
                         <div class="d-grid gap-2">
                             {% if user.is_authenticated %}
-                                {% if is_institute_user %}
-                                <a href="{% url 'course_edit' course.pk %}" class="btn btn-light border">Edit course</a>
-                                <a href="{% url 'course_delete' course.pk %}" class="btn btn-danger">Delete course</a>
-                                {% elif is_instructor_user %}
-                                <a href="{% url 'instructor_dashboard' %}" class="btn btn-outline-primary">Instructor portal</a>
-                                {% elif is_student_user %}
-                                    {% if is_enrolled %}
-                                    <button class="btn btn-success" disabled><i class="fas fa-check me-1"></i> Enrolled</button>
-                                    {% else %}
-                                    <a href="{% url 'courses_enroll' course.pk %}" class="btn btn-primary">Enroll now</a>
-                                    {% endif %}
-                                {% endif %}
+                            {% if is_institute_user %}
+                            <a href="{% url 'course_edit' course.pk %}" class="btn btn-light border">Edit course</a>
+                            <a href="{% url 'course_delete' course.pk %}" class="btn btn-danger">Delete course</a>
+                            {% elif is_instructor_user %}
+                            <a href="{% url 'instructor_dashboard' %}" class="btn btn-outline-primary">Instructor
+                                portal</a>
+                            {% elif is_student_user %}
+                            {% if is_enrolled %}
+                            <button class="btn btn-success" disabled><i class="fas fa-check me-1"></i> Enrolled</button>
+                            {% else %}
+                            <a href="{% url 'courses_enroll' course.pk %}" class="btn btn-primary">Enroll now</a>
+                            {% endif %}
+                            {% endif %}
                             {% else %}
                             <a href="{% url 'login' %}" class="btn btn-primary">Login to enroll</a>
                             {% endif %}
@@ -170,22 +200,57 @@
     <!-- Tabs -->
     <ul class="nav nav-pills course-tabs mb-4 flex-wrap" id="courseTabs" role="tablist">
         <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="details-tab" data-bs-toggle="pill" data-bs-target="#details" type="button" role="tab">
+            <button class="nav-link active" id="details-tab" data-bs-toggle="pill" data-bs-target="#details"
+                type="button" role="tab">
                 <i class="fas fa-info-circle me-2"></i>Details
             </button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link" id="notes-tab" data-bs-toggle="pill" data-bs-target="#notes" type="button" role="tab">
+            <button class="nav-link" id="notes-tab" data-bs-toggle="pill" data-bs-target="#notes" type="button"
+                role="tab">
                 <i class="fas fa-book me-2"></i>Notes
                 {% if notes %}<span class="badge bg-light text-primary ms-1">{{ notes|length }}</span>{% endif %}
             </button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link" id="quiz-tab" data-bs-toggle="pill" data-bs-target="#quiz" type="button" role="tab">
+            <button class="nav-link" id="quiz-tab" data-bs-toggle="pill" data-bs-target="#quiz" type="button"
+                role="tab">
                 <i class="fas fa-question-circle me-2"></i>Quiz
                 {% if quizzes %}<span class="badge bg-light text-primary ms-1">{{ quizzes|length }}</span>{% endif %}
             </button>
         </li>
+
+        <li class="nav-item" role="presentation">
+
+            <button class="nav-link" id="reviews-tab" data-bs-toggle="pill" data-bs-target="#reviews" type="button"
+                role="tab">
+
+                <i class="fas fa-star me-2"></i>
+
+                Reviews
+
+                {% if reviews %}
+                <span class="badge bg-light text-primary ms-1">
+                    {{ reviews|length }}
+                </span>
+                {% endif %}
+
+            </button>
+
+        </li>
+
+        <li><a href="{% url 'toggle_bookmark' course.id %}"
+   class="bookmark-btn">
+
+    {% if is_bookmarked %}
+        <i class="fas fa-bookmark"></i>
+    {% else %}
+        <i class="far fa-bookmark"></i>
+    {% endif %}
+
+</a>
+        </li>
+
     </ul>
 
     <div class="tab-content" id="courseTabContent">
@@ -202,17 +267,20 @@
                     </div>
                     <div class="tab-panel-card p-4">
                         <h4 class="fw-bold mb-3" style="color: #0a2647;">Curriculum</h4>
-                        <p class="mb-0 p-3 border rounded-3 bg-white" style="white-space: pre-line;">{{ course.curriculum }}</p>
+                        <p class="mb-0 p-3 border rounded-3 bg-white" style="white-space: pre-line;">{{
+                            course.curriculum }}</p>
                     </div>
                 </div>
                 <div class="col-lg-4">
                     <div class="tab-panel-card p-4 mb-4">
                         <h5 class="fw-bold mb-3">Requirements</h5>
-                        <p class="small text-muted mb-0">{{ course.requirements|default:"No prerequisites required." }}</p>
+                        <p class="small text-muted mb-0">{{ course.requirements|default:"No prerequisites required." }}
+                        </p>
                     </div>
                     <div class="tab-panel-card p-4">
                         <h5 class="fw-bold mb-3">Target audience</h5>
-                        <p class="small text-muted mb-0">{{ course.target_audience|default:"Anyone interested in this subject." }}</p>
+                        <p class="small text-muted mb-0">{{ course.target_audience|default:"Anyone interested in this
+                            subject." }}</p>
                     </div>
                 </div>
             </div>
@@ -221,7 +289,8 @@
         <!-- NOTES -->
         <div class="tab-pane fade" id="notes" role="tabpanel">
             <div class="tab-panel-card">
-                <div class="tab-panel-header d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                <div
+                    class="tab-panel-header d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
                     <div>
                         <h5 class="fw-bold mb-1" style="color: #0a2647;">
                             <i class="fas fa-sticky-note text-primary me-2"></i>Course notes
@@ -238,69 +307,71 @@
                 <div class="tab-panel-body">
                     {% if is_institute_user or is_instructor_user or is_enrolled %}
 
-                        {% if notes %}
-                        <div class="row g-4">
-                            {% for note in notes %}
-                            <div class="col-md-6">
-                                <div class="note-card card h-100">
-                                    <div class="card-body p-4 d-flex flex-column">
-                                        <div class="d-flex gap-3 mb-3">
-                                            <div class="note-file-icon">
-                                                <i class="fas fa-file-alt"></i>
-                                            </div>
-                                            <div class="flex-grow-1 min-w-0">
-                                                <h6 class="fw-bold mb-1 text-truncate">{{ note.title }}</h6>
-                                                <p class="text-muted small mb-0">
-                                                    {{ note.description|default:"No description"|truncatewords:20 }}
-                                                </p>
-                                            </div>
+                    {% if notes %}
+                    <div class="row g-4">
+                        {% for note in notes %}
+                        <div class="col-md-6">
+                            <div class="note-card card h-100">
+                                <div class="card-body p-4 d-flex flex-column">
+                                    <div class="d-flex gap-3 mb-3">
+                                        <div class="note-file-icon">
+                                            <i class="fas fa-file-alt"></i>
                                         </div>
-                                        <div class="d-flex justify-content-between align-items-center mt-auto pt-3 border-top">
-                                            <small class="text-secondary">
-                                                <i class="far fa-calendar me-1"></i>{{ note.created_at|date:"d M Y" }}
-                                            </small>
-                                            <div class="d-flex gap-2 flex-wrap justify-content-end">
-                                                <a href="{{ note.file.url }}"
-                                                   class="btn btn-sm btn-action-view rounded-pill px-3"
-                                                   target="_blank"
-                                                   rel="noopener"
-                                                   download>
-                                                    <i class="fas fa-download me-1"></i>Download
-                                                </a>
-                                                {% if can_manage_course %}
-                                                <a href="{% url 'edit_note' course.pk note.pk %}"
-                                                   class="btn btn-sm btn-action-edit rounded-pill px-3">
-                                                    <i class="fas fa-pen me-1"></i>Edit
-                                                </a>
-                                                <a href="{% url 'delete_note' course.pk note.pk %}"
-                                                   class="btn btn-sm btn-action-delete rounded-pill px-3">
-                                                    <i class="fas fa-trash me-1"></i>Delete
-                                                </a>
-                                                {% endif %}
-                                            </div>
+                                        <div class="flex-grow-1 min-w-0">
+                                            <h6 class="fw-bold mb-1 text-truncate">{{ note.title }}</h6>
+                                            <p class="text-muted small mb-0">
+                                                {{ note.description|default:"No description"|truncatewords:20 }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="d-flex justify-content-between align-items-center mt-auto pt-3 border-top">
+                                        <small class="text-secondary">
+                                            <i class="far fa-calendar me-1"></i>{{ note.created_at|date:"d M Y" }}
+                                        </small>
+                                        <div class="d-flex gap-2 flex-wrap justify-content-end">
+                                            <a href="{{ note.file.url }}"
+                                                class="btn btn-sm btn-action-view rounded-pill px-3" target="_blank"
+                                                rel="noopener" download>
+                                                <i class="fas fa-download me-1"></i>Download
+                                            </a>
+                                            {% if can_manage_course %}
+                                            <a href="{% url 'edit_note' course.pk note.pk %}"
+                                                class="btn btn-sm btn-action-edit rounded-pill px-3">
+                                                <i class="fas fa-pen me-1"></i>Edit
+                                            </a>
+                                            <a href="{% url 'delete_note' course.pk note.pk %}"
+                                                class="btn btn-sm btn-action-delete rounded-pill px-3">
+                                                <i class="fas fa-trash me-1"></i>Delete
+                                            </a>
+                                            {% endif %}
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            {% endfor %}
                         </div>
-                        {% else %}
-                        <div class="py-2">
-                            {% include 'main/partials/empty_state.html' with icon='fa-sticky-note' title='No notes uploaded yet' description='Upload PDFs, slides, or documents for students to download.' %}
-                            {% if can_manage_course %}
-                            <div class="text-center mt-3">
-                                <a href="{% url 'add_note' course.pk %}" class="btn btn-primary rounded-pill px-4">Upload first note</a>
-                            </div>
-                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="py-2">
+                        {% include 'main/partials/empty_state.html' with icon='fa-sticky-note' title='No notes uploaded
+                        yet' description='Upload PDFs, slides, or documents for students to download.' %}
+                        {% if can_manage_course %}
+                        <div class="text-center mt-3">
+                            <a href="{% url 'add_note' course.pk %}" class="btn btn-primary rounded-pill px-4">Upload
+                                first note</a>
                         </div>
                         {% endif %}
+                    </div>
+                    {% endif %}
 
                     {% elif user.is_authenticated and is_student_user %}
                     <div class="locked-panel text-center p-5">
                         <i class="fas fa-lock fa-2x text-muted mb-3"></i>
                         <h5 class="fw-bold">Notes are for enrolled students</h5>
                         <p class="text-muted mb-4">Enroll in this course to access study materials.</p>
-                        <a href="{% url 'courses_enroll' course.pk %}" class="btn btn-primary rounded-pill px-4">Enroll now</a>
+                        <a href="{% url 'courses_enroll' course.pk %}" class="btn btn-primary rounded-pill px-4">Enroll
+                            now</a>
                     </div>
                     {% else %}
                     <div class="locked-panel text-center p-5">
@@ -317,7 +388,8 @@
         <!-- QUIZ -->
         <div class="tab-pane fade" id="quiz" role="tabpanel">
             <div class="tab-panel-card">
-                <div class="tab-panel-header d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                <div
+                    class="tab-panel-header d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
                     <div>
                         <h5 class="fw-bold mb-1" style="color: #0a2647;">
                             <i class="fas fa-clipboard-check text-primary me-2"></i>Course quizzes
@@ -334,60 +406,66 @@
                 <div class="tab-panel-body">
                     {% if is_institute_user or is_instructor_user or is_enrolled %}
 
-                        {% if quizzes %}
-                        <div class="row g-4">
-                            {% for quiz in quizzes %}
-                            <div class="col-md-6 col-lg-4">
-                                <div class="quiz-card card h-100">
-                                    <div class="card-body p-4 d-flex flex-column">
-                                        <div class="d-flex justify-content-between align-items-start mb-2">
-                                            <h6 class="fw-bold mb-0">{{ quiz.title }}</h6>
-                                            {% if quiz.questions.count %}
-                                            <span class="badge quiz-status-ready rounded-pill">Ready</span>
-                                            {% else %}
-                                            <span class="badge quiz-status-draft rounded-pill">Draft</span>
-                                            {% endif %}
-                                        </div>
-                                        <p class="text-muted small mb-3">
-                                            <i class="fas fa-list-ol me-1"></i>
-                                            {{ quiz.questions.count }} question{{ quiz.questions.count|pluralize }}
-                                        </p>
-                                        <div class="d-flex flex-wrap gap-2 mt-auto">
-                                            <a href="{% url 'view_quiz' quiz.pk %}" class="btn btn-sm btn-outline-primary rounded-pill px-3">
-                                                <i class="fas fa-eye me-1"></i>View
-                                            </a>
-                                            {% if can_manage_course %}
-                                            <a href="{% url 'add_question' quiz.pk %}" class="btn btn-sm btn-primary rounded-pill px-3">
-                                                <i class="fas fa-pen me-1"></i>Manage
-                                            </a>
-                                            {% elif is_student_user and quiz.questions.count %}
-                                            <a href="{% url 'view_quiz' quiz.pk %}" class="btn btn-sm btn-success rounded-pill px-3">
-                                                <i class="fas fa-play me-1"></i>Start
-                                            </a>
-                                            {% endif %}
-                                        </div>
+                    {% if quizzes %}
+                    <div class="row g-4">
+                        {% for quiz in quizzes %}
+                        <div class="col-md-6 col-lg-4">
+                            <div class="quiz-card card h-100">
+                                <div class="card-body p-4 d-flex flex-column">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <h6 class="fw-bold mb-0">{{ quiz.title }}</h6>
+                                        {% if quiz.questions.count %}
+                                        <span class="badge quiz-status-ready rounded-pill">Ready</span>
+                                        {% else %}
+                                        <span class="badge quiz-status-draft rounded-pill">Draft</span>
+                                        {% endif %}
+                                    </div>
+                                    <p class="text-muted small mb-3">
+                                        <i class="fas fa-list-ol me-1"></i>
+                                        {{ quiz.questions.count }} question{{ quiz.questions.count|pluralize }}
+                                    </p>
+                                    <div class="d-flex flex-wrap gap-2 mt-auto">
+                                        <a href="{% url 'view_quiz' quiz.pk %}"
+                                            class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                                            <i class="fas fa-eye me-1"></i>View
+                                        </a>
+                                        {% if can_manage_course %}
+                                        <a href="{% url 'add_question' quiz.pk %}"
+                                            class="btn btn-sm btn-primary rounded-pill px-3">
+                                            <i class="fas fa-pen me-1"></i>Manage
+                                        </a>
+                                        {% elif is_student_user and quiz.questions.count %}
+                                        <a href="{% url 'view_quiz' quiz.pk %}"
+                                            class="btn btn-sm btn-success rounded-pill px-3">
+                                            <i class="fas fa-play me-1"></i>Start
+                                        </a>
+                                        {% endif %}
                                     </div>
                                 </div>
                             </div>
-                            {% endfor %}
                         </div>
-                        {% else %}
-                        <div class="py-2">
-                            {% include 'main/partials/empty_state.html' with icon='fa-question-circle' title='No quizzes yet' description='Create a quiz and add questions to assess student learning.' %}
-                            {% if can_manage_course %}
-                            <div class="text-center mt-3">
-                                <a href="{% url 'add_quiz' course.pk %}" class="btn btn-primary rounded-pill px-4">Create first quiz</a>
-                            </div>
-                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="py-2">
+                        {% include 'main/partials/empty_state.html' with icon='fa-question-circle' title='No quizzes
+                        yet' description='Create a quiz and add questions to assess student learning.' %}
+                        {% if can_manage_course %}
+                        <div class="text-center mt-3">
+                            <a href="{% url 'add_quiz' course.pk %}" class="btn btn-primary rounded-pill px-4">Create
+                                first quiz</a>
                         </div>
                         {% endif %}
+                    </div>
+                    {% endif %}
 
                     {% elif user.is_authenticated and is_student_user %}
                     <div class="locked-panel text-center p-5">
                         <i class="fas fa-lock fa-2x text-muted mb-3"></i>
                         <h5 class="fw-bold">Quizzes unlock after enrollment</h5>
                         <p class="text-muted mb-4">Enroll to take course quizzes.</p>
-                        <a href="{% url 'courses_enroll' course.pk %}" class="btn btn-primary rounded-pill px-4">Enroll now</a>
+                        <a href="{% url 'courses_enroll' course.pk %}" class="btn btn-primary rounded-pill px-4">Enroll
+                            now</a>
                     </div>
                     {% else %}
                     <div class="locked-panel text-center p-5">
@@ -399,37 +477,106 @@
                 </div>
             </div>
         </div>
+        <div class="tab-pane fade" id="reviews" role="tabpanel">
+            {% if is_enrolled %}
 
+
+
+            <button class="btn btn-primary mb-4"><a class="nav-link d-flex align-items-center"
+                    href="{% url 'add_review' course.id %}">
+
+                    <i class="fas fa-pen-alt me-2"></i>
+
+                    Add Review
+
+
+                </a></button>
+
+            {% endif %}
+            <div class="card border-0 shadow-sm">
+
+                <div class="card-body">
+
+                    <h4 class="fw-bold mb-4">
+
+                        Student Reviews
+
+                    </h4>
+
+                    {% for review in reviews %}
+
+                    <div class="border-bottom pb-3 mb-3">
+
+                        <div class="d-flex justify-content-between">
+
+                            <strong>
+                                {{ review.student.username }}
+                            </strong>
+
+                            <small class="text-muted">
+                                {{ review.created_at|date:"d M Y" }}
+                            </small>
+
+                        </div>
+
+                        <div class="text-warning">
+
+                            {% for i in "12345" %}
+
+                            {% if forloop.counter <= review.rating %} ⭐ {% endif %} {% endfor %} </div>
+
+                                <p class="mt-2 mb-0">
+                                    {{ review.comment }}
+                                </p>
+
+                        </div>
+
+                        {% empty %}
+
+                        <div class="alert alert-info">
+
+                            No reviews available yet.
+
+                        </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
     </div>
-</div>
 
-<script>
-(function () {
-    function openTabFromUrl() {
-        const params = new URLSearchParams(window.location.search);
-        let tabId = params.get('tab');
-        if (!tabId && window.location.hash) {
-            tabId = window.location.hash.replace('#', '');
-        }
-        if (!tabId) return;
+    <script>
+        (function () {
+            function openTabFromUrl() {
+                const params = new URLSearchParams(window.location.search);
+                let tabId = params.get('tab');
+                if (!tabId && window.location.hash) {
+                    tabId = window.location.hash.replace('#', '');
+                }
+                if (!tabId) return;
 
-        const trigger = document.getElementById(tabId + '-tab');
-        if (trigger && window.bootstrap) {
-            bootstrap.Tab.getOrCreateInstance(trigger).show();
-        }
-    }
+                const trigger = document.getElementById(tabId + '-tab');
+                if (trigger && window.bootstrap) {
+                    bootstrap.Tab.getOrCreateInstance(trigger).show();
+                }
+            }
 
-    document.querySelectorAll('#courseTabs button[data-bs-toggle="pill"]').forEach(function (btn) {
-        btn.addEventListener('shown.bs.tab', function () {
-            const id = btn.getAttribute('data-bs-target').replace('#', '');
-            const url = new URL(window.location);
-            url.searchParams.set('tab', id);
-            history.replaceState(null, '', url);
-        });
-    });
+            document.querySelectorAll('#courseTabs button[data-bs-toggle="pill"]').forEach(function (btn) {
+                btn.addEventListener('shown.bs.tab', function () {
+                    const id = btn.getAttribute('data-bs-target').replace('#', '');
+                    const url = new URL(window.location);
+                    url.searchParams.set('tab', id);
+                    history.replaceState(null, '', url);
+                });
+            });
 
-    openTabFromUrl();
-})();
-</script>
+            openTabFromUrl();
+        })();
+    </script>
 
-{% endblock %}
+    {% endblock %}

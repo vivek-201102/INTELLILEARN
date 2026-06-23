@@ -132,4 +132,17 @@ urlpatterns = [
         views.course_detail,
         name='course_detail'
     ),
+
+    path(
+    'certificate/<int:enrollment_id>/',
+    views.certificate_view,
+    name='certificate'
+),
+
+path(
+    'course/<int:pk>/review/',
+    views.add_review,
+    name='add_review'
+),
+
 ]

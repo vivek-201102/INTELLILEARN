@@ -1,0 +1,106 @@
+{% extends 'main/student_base.html' %}
+
+{% block student_content %}
+<div class="container py-5 d-flex justify-content-center">
+    <div class="card shadow-lg border-0" style="max-width: 600px; width: 100%; border-radius: 12px; background: #ffffff;">
+        
+        <!-- Header Visual Element: Locked State Banner -->
+        <div class="position-relative text-center py-5 bg-light rounded-top-4 border-bottom" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);">
+            <!-- Lock Icon Graphic with Multi-layered rings -->
+            <div class="position-relative d-inline-block">
+                <div class="bg-white rounded-circle d-flex align-items-center justify-content-center shadow-sm border mx-auto mb-3 animate-pulse" style="width: 90px; height: 90px;">
+                    <i class="bi bi-lock-fill text-warning" style="font-size: 2.5rem;"></i>
+                </div>
+                <!-- Mini Badge Overlay -->
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-secondary border border-light">
+                    Locked
+                </span>
+            </div>
+            
+            <h3 class="fw-bold text-dark mt-2 mb-0">Certificate Milestone</h3>
+            <p class="text-muted small px-3 mb-0">Keep going! You're on your way to earning your official credential.</p>
+        </div>
+
+        <!-- Progress Tracker Section -->
+        <div class="card-body p-4 p-md-5">
+            
+            <!-- Requirement Banner Notification -->
+            <div class="alert alert-warning border-0 bg-warning bg-opacity-10 d-flex align-items-start p-3 mb-4 rounded-3" role="alert">
+                <i class="bi bi-exclamation-triangle-fill text-warning me-3 fs-5 mt-1"></i>
+                <div>
+                    <h6 class="alert-heading fw-bold text-dark mb-1">Eligibility Requirement</h6>
+                    <p class="mb-0 text-muted small" style="line-height: 1.4;">
+                        To unlock and download your completion certificate, you must complete at least 
+                        <strong class="text-dark">70% of the course content</strong>.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Current Progress Meter Graphics -->
+            <div class="mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="text-uppercase tracking-wider fw-bold text-secondary small" style="letter-spacing: 1px; font-size: 0.75rem;">
+                        Your Academic Progress
+                    </span>
+                    <span class="badge bg-primary fs-6 fw-bold">
+                        {{ enrollment.progress }}%
+                    </span>
+                </div>
+                
+                <!-- Modern Visual Progress Track -->
+                <div class="progress rounded-pill shadow-inner position-relative" style="height: 16px; background-color: #e9ecef;">
+                    <!-- 70% Marker Line Pinpointed Graphically -->
+                    <div class="position-absolute h-100 bg-danger" style="width: 2px; left: 70%; z-index: 2; opacity: 0.6;" title="70% Required Target"></div>
+                    
+                    <!-- Main dynamic filler bar -->
+                    <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary rounded-pill" 
+                         role="progressbar" 
+                         style="width: {{ enrollment.progress }}%; z-index: 1;" 
+                         aria-valuenow="{{ enrollment.progress }}" 
+                         aria-valuemin="0" 
+                         aria-valuemax="100">
+                    </div>
+                </div>
+                
+                <!-- Target Indicator text underneath progress bar -->
+                <div class="d-flex justify-content-between mt-1">
+                    <span class="text-muted" style="font-size: 0.7rem;">0% Started</span>
+                    <span class="text-danger fw-semibold" style="font-size: 0.7rem; margin-right: 22%;">▲ 70% Target</span>
+                    <span class="text-muted" style="font-size: 0.7rem;">100%</span>
+                </div>
+            </div>
+
+            <hr class="my-4 opacity-25">
+
+            <!-- Action Guide Line Footnote -->
+            <div class="text-center">
+                <p class="text-muted small mb-3">
+                    Course: <strong class="text-dark">{{ enrollment.course.title }}</strong>
+                </p>
+                <a href="{{ enrollment.course.get_absolute_url|default:'#' }}" class="btn btn-outline-primary btn-sm px-4 rounded-pill fw-semibold">
+                    <i class="bi bi-play-circle-fill me-2"></i> Resume Learning
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Extra styles injected right into template for micro animations -->
+<style>
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.04); }
+        100% { transform: scale(1); }
+    }
+    .animate-pulse {
+        animation: pulse 3s infinite ease-in-out;
+    }
+    .shadow-inner {
+        box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
+    }
+</style>
+
+<!-- Optional Bootstrap Icons asset mirror if needed -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+{% endblock %}
